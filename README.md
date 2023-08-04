@@ -32,5 +32,11 @@ pip install -r requirements.txt
 ```
 
 ## environment variables
-TODO
+- Rename .env.example file to .env
+- Edit .env file
+
+# run 
+```
+python bot/main.py
+```
 
