@@ -1,4 +1,5 @@
 # Calorie counter telegram bot
+[![Python application](https://github.com/kart0fka/telegram-bot-calorie-counter/actions/workflows/python-app.yml/badge.svg)](https://github.com/kart0fka/telegram-bot-calorie-counter/actions/workflows/python-app.yml)
 
 Just a pet project
 
