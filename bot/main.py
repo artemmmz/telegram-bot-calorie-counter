@@ -6,8 +6,8 @@ from config import TELEGRAM_BOT_TOKEN
 from handlers import register_all_handlers
 
 
-async def __on_startup():
-    register_all_handlers()
+async def __on_startup(dp: Dispatcher):
+    register_all_handlers(dp)
 
 
 if __name__ == '__main__':

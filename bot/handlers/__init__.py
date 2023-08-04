@@ -1,1 +1,1 @@
-from main import register_all_handlers  # noqa: F401
+from .main import register_all_handlers  # noqa: F401
