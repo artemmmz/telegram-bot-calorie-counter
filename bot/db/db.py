@@ -30,5 +30,5 @@ class Database(object):
         if limit == -1:
             return list(self.collection.find(data))
 
-    def update_elem(self, filter: dict, data: dict):
-        self.collection.update_one(filter, {'$set': data})
+    def update_elem(self, filter: dict, data: dict, type_: str = 'set'):
+        self.collection.update_one(filter, {f'${type_}': data})

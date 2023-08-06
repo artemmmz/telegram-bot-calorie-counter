@@ -35,7 +35,9 @@ START_INLINE_KEYBOARD.row(
 )
 
 MENU_INLINE_KEYBOARD = InlineKeyboardMarkup()
-MENU_INLINE_KEYBOARD.row(InlineKeyboardButton('Write', callback_data='write'))
+MENU_INLINE_KEYBOARD.row(
+    InlineKeyboardButton('Record', callback_data='record')
+)
 MENU_INLINE_KEYBOARD.row(
     InlineKeyboardButton('Profile', callback_data='profile')
 )
@@ -50,6 +52,34 @@ PROFILE_INLINE_KEYBOARD.row(
     )
 )
 PROFILE_INLINE_KEYBOARD.row(InlineKeyboardButton('Change language(soon)'))
+
+LANGUAGE_INLINE_KEYBOARD = InlineKeyboardMarkup()
+LANGUAGE_INLINE_KEYBOARD.add(
+    InlineKeyboardButton('English', callback_data='language_en')
+)
+
+UNIT_INLINE_KEYBOARD = InlineKeyboardMarkup()
+UNIT_INLINE_KEYBOARD.add(
+    InlineKeyboardButton('Gram', callback_data='unit_g'),
+    InlineKeyboardButton('Ounce', callback_data='unit_oz'),
+)
+
+TIME_ZONE_INLINE_KEYBOARD = InlineKeyboardMarkup()
+TIME_ZONE_INLINE_KEYBOARD.add(
+    InlineKeyboardButton('UTC-3', callback_data='zone_-3'),
+    InlineKeyboardButton('UTC-2', callback_data='zone_-2'),
+    InlineKeyboardButton('UTC-1', callback_data='zone_-1'),
+    InlineKeyboardButton('UTC+0', callback_data='zone_+0'),
+    InlineKeyboardButton('UTC+1', callback_data='zone_+1'),
+    InlineKeyboardButton('UTC+2', callback_data='zone_+2'),
+    InlineKeyboardButton('UTC+3', callback_data='zone_+3'),
+)
+
+SETTINGS_END_INLINE_KEYBOARD = InlineKeyboardMarkup()
+SETTINGS_END_INLINE_KEYBOARD.add(
+    InlineKeyboardButton('Yes', callback_data='calculate_calorie'),
+    InlineKeyboardButton('No', callback_data='to_menu'),
+)
 
 GENDER_INLINE_KEYBOARD = InlineKeyboardMarkup()
 GENDER_INLINE_KEYBOARD.row(
