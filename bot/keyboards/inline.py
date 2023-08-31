@@ -33,10 +33,14 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     if page == -1:
         page = TIME_ZONE_START_PAGE
     keyboard = InlineKeyboardMarkup(row_width=rows)
-    keyboard.add(*[
-        InlineKeyboardButton(f'UTC{tz}', callback_data=f'zone_{tz}')
-        for tz in TIME_ZONES[rows * cols * page: rows * cols * (page + 1)]
-    ])
+    keyboard.add(
+        *[
+            InlineKeyboardButton(f'UTC{tz}', callback_data=f'zone_{tz}')
+            for tz in TIME_ZONES[
+                rows * cols * page: rows * cols * (page + 1)  # fmt: skip
+            ]
+        ]
+    )
 
     control_row = []
     if page > 0:

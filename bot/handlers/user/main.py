@@ -44,11 +44,7 @@ async def command_menu(message: types.Message) -> None:
 
 
 async def command_profile(message: types.Message) -> None:
-    await message.answer(
-        (
-            'Your profile\n'
-        )
-    )
+    await message.answer(('Your profile\n'))
 
 
 async def command_statistics(message: types.Message):
@@ -59,47 +55,52 @@ async def command_statistics(message: types.Message):
     fat_limit = user['limits']['fat']
     carb_limit = user['limits']['carb']
 
-    records = db_users.collection.aggregate([
-        {
-            '$match':
+    records = db_users.collection.aggregate(
+        [
             {
-                'user_id': user_id,
-            },
-        },
-        {
-            '$unwind': "$records",
-        },
-        {
-            '$match':
-            {
-                'records.time': {
-                    '$gte': timezone(
-                        datetime.combine(date.today(), datetime.min.time()),
-                        user['settings']['utc'], True
-                    ),
-                    '$lte': timezone(
-                        datetime.combine(date.today(), datetime.max.time()),
-                        user['settings']['utc'], True
-                    )
+                '$match': {
+                    'user_id': user_id,
                 },
             },
-        },
-        {
-            '$group':
             {
-                '_id': 'null',
-                'protein': {
-                    '$sum': "$records.protein",
-                },
-                'fat': {
-                    '$sum': "$records.fat",
-                },
-                'carb': {
-                    '$sum': "$records.carb",
+                '$unwind': "$records",
+            },
+            {
+                '$match': {
+                    'records.time': {
+                        '$gte': timezone(
+                            datetime.combine(
+                                date.today(), datetime.min.time()
+                            ),
+                            user['settings']['utc'],
+                            True,
+                        ),
+                        '$lte': timezone(
+                            datetime.combine(
+                                date.today(), datetime.max.time()
+                            ),
+                            user['settings']['utc'],
+                            True,
+                        ),
+                    },
                 },
             },
-        },
-    ])
+            {
+                '$group': {
+                    '_id': 'null',
+                    'protein': {
+                        '$sum': "$records.protein",
+                    },
+                    'fat': {
+                        '$sum': "$records.fat",
+                    },
+                    'carb': {
+                        '$sum': "$records.carb",
+                    },
+                },
+            },
+        ]
+    )
 
     mass_unit = user['settings']['mass']
     if not records.alive:
@@ -190,7 +191,7 @@ async def settings_state_unit(
 async def settings_state_time_zone_page(
     callback_query: types.CallbackQuery, state: FSMContext
 ):
-    page = int(callback_query.data[len('zonepage_'):])
+    page = int(callback_query.data[len('zonepage_'):])  # fmt: skip
     await callback_query.message.edit_reply_markup(get_timezone_keyboard(page))
 
 
@@ -415,9 +416,7 @@ async def record_state_carb(message: types.Message, state: FSMContext) -> None:
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
-    await state.update_data(
-        {'carb': answer / mass, 'time': datetime.utcnow()}
-    )
+    await state.update_data({'carb': answer / mass, 'time': datetime.utcnow()})
 
     data = await state.get_data()
     data.pop('mass')
@@ -466,12 +465,12 @@ def register_user_handlers(dp: Dispatcher) -> None:
     dp.register_callback_query_handler(
         settings_state_time_zone_page,
         filters.Text(startswith='zonepage_'),
-        state=SettingsState.time_zone
+        state=SettingsState.time_zone,
     )
     dp.register_callback_query_handler(
         settings_state_time_zone,
         filters.Text(startswith='zone_'),
-        state=SettingsState.time_zone
+        state=SettingsState.time_zone,
     )
     dp.register_callback_query_handler(
         settings_state_unit, state=SettingsState.mass_unit

@@ -22,7 +22,13 @@ class Database(object):
         except errors.DuplicateKeyError:
             return None
 
-    def get_records(self, data: dict = {}, *args, limit: int = -1, **kwargs, ):
+    def get_records(
+        self,
+        data: dict = {},
+        *args,
+        limit: int = -1,
+        **kwargs,
+    ):
         if limit == 1:
             return self.collection.find_one(data, *args, **kwargs)
         if limit > 1:
