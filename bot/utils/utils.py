@@ -17,6 +17,10 @@ def kcal_limit(
     return int(result)
 
 
+def kcal_count(protein: float, fat: float, carb: float) -> int:
+    return round(protein * 4 + fat * 9 + carb * 4)
+
+
 def limits(kcal: int, for_what: int) -> list[int]:
     limit = LIMITS_CONST[for_what]
     return [
@@ -43,10 +47,9 @@ def timezone_to_deltatime(zone: str) -> timedelta:  # zone struct "+0[:00]"
     return timedelta(hours=hour, minutes=minutes)
 
 
-def timezone(time: str, zone: str):
-    dt = datetime.fromisoformat(time)
-    if zone[0] == '-':
-        dt -= timezone_to_deltatime(zone)
+def timezone(time: datetime, zone: str, reverse: bool = False):
+    if zone[0] == '-' and not reverse:
+        time -= timezone_to_deltatime(zone)
     else:
-        dt += timezone_to_deltatime(zone)
-    return dt
+        time += timezone_to_deltatime(zone)
+    return time

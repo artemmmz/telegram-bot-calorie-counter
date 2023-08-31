@@ -1,5 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from .utils import TIME_ZONES, TIME_ZONE_START_PAGE
+
 
 def get_yesno_keyboard(row_width=2, prefix=None) -> InlineKeyboardMarkup:
     if prefix:
@@ -27,6 +29,28 @@ def get_keyboard_of_nums(
     return keyboard
 
 
+def get_timezone_keyboard(page=-1, rows=3, cols=3):
+    if page == -1:
+        page = TIME_ZONE_START_PAGE
+    keyboard = InlineKeyboardMarkup(row_width=rows)
+    keyboard.add(*[
+        InlineKeyboardButton(f'UTC{tz}', callback_data=f'zone_{tz}')
+        for tz in TIME_ZONES[rows * cols * page: rows * cols * (page + 1)]
+    ])
+
+    control_row = []
+    if page > 0:
+        control_row.append(
+            InlineKeyboardButton('<<', callback_data=f'zonepage_{page - 1}')
+        )
+    if page < len(TIME_ZONES) / (rows * cols) - 1:
+        control_row.append(
+            InlineKeyboardButton('>>', callback_data=f'zonepage_{page + 1}')
+        )
+    keyboard.row(*control_row)
+    return keyboard
+
+
 START_INLINE_KEYBOARD = InlineKeyboardMarkup()
 START_INLINE_KEYBOARD.row(
     InlineKeyboardButton(
@@ -40,6 +64,9 @@ MENU_INLINE_KEYBOARD.row(
 )
 MENU_INLINE_KEYBOARD.row(
     InlineKeyboardButton('Profile', callback_data='profile')
+)
+MENU_INLINE_KEYBOARD.row(
+    InlineKeyboardButton('Statistics', callback_data='statistics')
 )
 
 PROFILE_INLINE_KEYBOARD = InlineKeyboardMarkup()
@@ -62,17 +89,6 @@ UNIT_INLINE_KEYBOARD = InlineKeyboardMarkup()
 UNIT_INLINE_KEYBOARD.add(
     InlineKeyboardButton('Gram', callback_data='unit_g'),
     InlineKeyboardButton('Ounce', callback_data='unit_oz'),
-)
-
-TIME_ZONE_INLINE_KEYBOARD = InlineKeyboardMarkup()
-TIME_ZONE_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('UTC-3', callback_data='zone_-3'),
-    InlineKeyboardButton('UTC-2', callback_data='zone_-2'),
-    InlineKeyboardButton('UTC-1', callback_data='zone_-1'),
-    InlineKeyboardButton('UTC+0', callback_data='zone_+0'),
-    InlineKeyboardButton('UTC+1', callback_data='zone_+1'),
-    InlineKeyboardButton('UTC+2', callback_data='zone_+2'),
-    InlineKeyboardButton('UTC+3', callback_data='zone_+3'),
 )
 
 SETTINGS_END_INLINE_KEYBOARD = InlineKeyboardMarkup()

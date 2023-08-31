@@ -7,8 +7,8 @@ from .inline import (  # noqa: F401
     CALCULATE_FINISH_INLINE_KEYBOARD,
     LANGUAGE_INLINE_KEYBOARD,
     UNIT_INLINE_KEYBOARD,
-    TIME_ZONE_INLINE_KEYBOARD,
     SETTINGS_END_INLINE_KEYBOARD,
     get_keyboard_of_nums,
     get_yesno_keyboard,
+    get_timezone_keyboard,
 )
