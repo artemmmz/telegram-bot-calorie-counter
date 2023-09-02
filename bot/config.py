@@ -1,7 +1,9 @@
 from os import getenv
-from dotenv import load_dotenv
 
-load_dotenv()
+''' Uncomment this if you're using .env file '''
+# from dotenv import load_dotenv
+
+# load_dotenv()
 
 # APP
 DEBUG: bool | None = getenv('DEBUG', '0').lower() in ['1', 'true', 'yes']
@@ -24,5 +26,4 @@ DB_CONNECTION_STRING = (
     f':{DB_AUTH_PASSWORD}@'
     f'{DB_SERVER_HOST}'
     f':{DB_SERVER_PORT}/'
-    f'{DB_NAME}'
 )

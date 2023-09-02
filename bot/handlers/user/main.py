@@ -404,7 +404,7 @@ async def record_state_fat(message: types.Message, state: FSMContext) -> None:
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
-    await state.update_data({'fat': answer / mass})
+    await state.update_data({'fat': answer * mass})
     await RecordState.next()
 
     await message.answer('Input the weight of fat per 100 grams')
@@ -416,7 +416,7 @@ async def record_state_carb(message: types.Message, state: FSMContext) -> None:
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
-    await state.update_data({'carb': answer / mass, 'time': datetime.utcnow()})
+    await state.update_data({'carb': answer * mass, 'time': datetime.utcnow()})
 
     data = await state.get_data()
     data.pop('mass')

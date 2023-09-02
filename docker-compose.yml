@@ -1,0 +1,26 @@
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=artem_kart0fka_root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=test_bot1
+    networks:
+      - mongonetwork
+  bot:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /opt/project
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    networks:
+      - mongonetwork
+networks:
+  mongonetwork:
+    driver: bridge

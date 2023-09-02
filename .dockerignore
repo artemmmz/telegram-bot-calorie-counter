@@ -1,0 +1,6 @@
+*.md
+__pycache__
+.env.example
+.vscode
+.github
+.git
