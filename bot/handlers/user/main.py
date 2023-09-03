@@ -1,12 +1,13 @@
 from datetime import datetime, date
+from math import ceil
 
 from aiogram import Dispatcher, filters, types
 from aiogram.dispatcher import FSMContext
 
-from config import TELEGRAM_BOT_SUPERUSER_ID
+from config import TELEGRAM_BOT_SUPERUSER_ID, RECORDS_PAGE_NUM
 from db import Database
 from db.structures import create_user, create_record
-from db.utils import get_aggregate_records
+from db.utils import get_user
 from keyboards import (
     GENDER_INLINE_KEYBOARD,
     MENU_INLINE_KEYBOARD,
@@ -17,6 +18,7 @@ from keyboards import (
     get_keyboard_of_nums,
     get_timezone_keyboard,
     get_statistics_keyboard,
+    get_records_keyboard,
 )
 from utils.utils import kcal_limit, limits
 from utils.states import CalculateState, RecordState, SettingsState
@@ -25,7 +27,7 @@ db_users = Database('users')
 
 
 # COMMANDS
-async def command_start(message: types.Message) -> None:
+async def command_start(message: types.Message):
     await message.answer(
         ('Hello!\n' 'Select is your language'),
         reply_markup=LANGUAGE_INLINE_KEYBOARD,
@@ -41,7 +43,7 @@ async def command_start(message: types.Message) -> None:
     )
 
 
-async def command_menu(message: types.Message) -> None:
+async def command_menu(message: types.Message):
     await message.answer(
         (
             '<b>MENU</b>\n\n'
@@ -55,7 +57,7 @@ async def command_menu(message: types.Message) -> None:
     )
 
 
-async def command_profile(message: types.Message) -> None:
+async def command_profile(message: types.Message):
     await message.answer(('Your profile\n'))
 
 
@@ -67,15 +69,20 @@ async def command_statistics(
         date_string = date.today().isoformat()
         edit_message = False
     user_id = message.from_user.id
-    answer = list(get_aggregate_records(user_id, date_string))[0]
+    user = get_user(user_id, date_string)
 
     text = (
         'Your statistics for {ds}:\n\n'
-        'Protein: {r[records][protein]}/{r[limits][protein]} {r[unit]}\n'
-        'Fat: {r[records][fat]}/{r[limits][fat]} {r[unit]}\n'
-        'Carb: {r[records][carb]}/{r[limits][carb]} {r[unit]}\n'
-        'Calories: {r[records][calories]}/{r[limits][calories]} kcal\n'
-    ).format(ds=date_string, r=answer)
+        'Protein: {s[protein]}/{l[protein]} {u}\n'
+        'Fat: {s[fat]}/{l[fat]} {u}\n'
+        'Carb: {s[carb]}/{l[carb]} {u}\n'
+        'Calories: {s[calories]}/{l[calories]} kcal\n'
+    ).format(
+        ds=date_string,
+        u=user['settings']['mass'],
+        s=user['statistics'],
+        l=user['limits'],
+    )
     if edit_message:
         await message.edit_text(
             text, reply_markup=get_statistics_keyboard(date_string)
@@ -86,35 +93,86 @@ async def command_statistics(
         )
 
 
+async def command_records(
+    message: types.Message,
+    date_string: str | None = None,
+    page: int | None = None,
+):
+    user_id = message.from_user.id
+    edit_message = True
+    if date_string is None:
+        date_string = date.today().isoformat()
+        edit_message = False
+    if page is None:
+        page = 0
+    user = get_user(user_id, date_string)
+    records = []
+    # TODO
+
+    records_text = '\n'.join(records)
+    text = 'Records for {ds}\n\n{rt}'.format(ds=date_string, rt=records_text)
+    reply_markup = get_records_keyboard(
+        date_string, page, ceil(len(user['records_conv']) / RECORDS_PAGE_NUM)
+    )
+
+    if edit_message:
+        await message.edit_text(text, reply_markup=reply_markup)
+    else:
+        await message.answer(text, reply_markup=reply_markup)
+
+
+async def command_cancel(message: types.Message, state: FSMContext):
+    await state.finish()
+    await command_menu(message)
+
+
 # CALLBACKS
 async def callback_calculate_calories(
     callback_query: types.CallbackQuery,
-) -> None:
+):
     await callback_query.message.delete()
     await command_calculate_calories(callback_query.message)
 
 
-async def callback_open_menu(callback_query: types.CallbackQuery) -> None:
+async def callback_open_menu(callback_query: types.CallbackQuery):
     await callback_query.message.delete()
     await command_menu(callback_query.message)
 
 
-async def callback_profile(callback_query: types.CallbackQuery) -> None:
+async def callback_profile(callback_query: types.CallbackQuery):
     await callback_query.message.delete()
     callback_query.message.from_user = callback_query.from_user
     await command_profile(callback_query.message)
 
 
 async def callback_statistics(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
-    callback_query.message.from_user = callback_query.from_user
-    await command_statistics(callback_query.message)
-
-
-async def callback_statistics_date(callback_query: types.CallbackQuery):
     date_string = callback_query.data[len('statistics_'):]  # fmt: skip
+    if date_string == '':
+        await callback_query.message.delete()
+        date_string = None
     callback_query.message.from_user = callback_query.from_user
     await command_statistics(callback_query.message, date_string)
+
+
+async def callback_records(callback_query: types.CallbackQuery):
+    params_raw = callback_query.data[len('records_'):]  # fmt: skip
+    if params_raw == '':
+        await callback_query.message.delete()
+        params = None
+        date_string, page = None, None
+    else:
+        params = params_raw.split('_')
+        date_string = params[0]
+        page = int(params[1][len('p'):])  # fmt: skip
+    callback_query.message.from_user = callback_query.from_user
+    await command_records(callback_query.message, date_string, page)
+
+
+async def callback_cancel(
+    callback_query: types.CallbackQuery, state: FSMContext
+):
+    await callback_query.message.delete()
+    await command_cancel(callback_query.message, state)
 
 
 # STATES
@@ -154,7 +212,7 @@ async def settings_state_time_zone_page(
 
 async def settings_state_time_zone(
     callback_query: types.CallbackQuery, state: FSMContext
-) -> None:
+):
     await callback_query.message.delete()
     answer = callback_query.data[len('zone_'):]  # fmt: skip
     await state.update_data({'utc': answer})
@@ -172,7 +230,7 @@ async def settings_state_time_zone(
 
 
 # Calculate State
-async def command_calculate_calories(message: types.Message) -> None:
+async def command_calculate_calories(message: types.Message):
     await CalculateState.for_what.set()
     await message.answer(
         (
@@ -187,7 +245,7 @@ async def command_calculate_calories(message: types.Message) -> None:
 
 async def calculate_state_for_what(
     callback_query: types.CallbackQuery, state: FSMContext
-) -> None:
+):
     ind = int(callback_query.data[len('for_what_'):])  # fmt: skip
     await callback_query.message.edit_reply_markup(None)
     await state.update_data({'for_what': ind})
@@ -200,7 +258,7 @@ async def calculate_state_for_what(
 
 async def calculate_state_gender(
     callback_query: types.CallbackQuery, state: FSMContext
-) -> None:
+):
     answer = int(callback_query.data[len('gender_'):])  # fmt: skip
     await callback_query.message.delete()
     await state.update_data({'gender': answer})
@@ -209,9 +267,7 @@ async def calculate_state_gender(
     await callback_query.message.answer('Input your age')
 
 
-async def calculate_state_age(
-    message: types.Message, state: FSMContext
-) -> None:
+async def calculate_state_age(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer('It must be a number')
         return
@@ -221,9 +277,7 @@ async def calculate_state_age(
     await message.answer('Input your growth(rounded)')
 
 
-async def calculate_state_growth(
-    message: types.Message, state: FSMContext
-) -> None:
+async def calculate_state_growth(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer('It must be a number')
         return
@@ -233,9 +287,7 @@ async def calculate_state_growth(
     await message.answer('Input your weight(rounded)')
 
 
-async def calculate_state_weight(
-    message: types.Message, state: FSMContext
-) -> None:
+async def calculate_state_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
         await message.answer('It must be a number')
         return
@@ -259,7 +311,7 @@ async def calculate_state_weight(
 
 async def calculate_state_activity(
     callback_query: types.CallbackQuery, state: FSMContext
-) -> None:
+):
     await callback_query.message.delete()
     activity = int(callback_query.data[len('activity_'):])  # fmt: skip
     data = await state.get_data()
@@ -309,30 +361,26 @@ async def calculate_state_waiting_for_finish(
     await state.finish()
 
 
-async def calculate_state_cancel(
-    message: types.Message, state: FSMContext
-) -> None:
+async def calculate_state_cancel(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer('Cancel state')
     await command_menu(message)
 
 
 # Record state
-async def command_record(message: types.Message) -> None:
+async def command_record(message: types.Message):
     await RecordState.weight.set()
     await message.answer('Input the weight of eaten')
 
 
-async def callback_record(callback_query: types.CallbackQuery) -> None:
+async def callback_record(callback_query: types.CallbackQuery):
     await callback_query.message.delete()
     await command_record(callback_query.message)
 
 
-async def record_state_weight(
-    message: types.Message, state: FSMContext
-) -> None:
+async def record_state_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        message.answer('It must be a number(gram)')
+        await message.answer('It must be a number(gram)')
         return
     answer = int(message.text)
     await state.update_data({'mass': answer / 100})
@@ -341,11 +389,9 @@ async def record_state_weight(
     await message.answer('Input the weight of protein per 100 grams')
 
 
-async def record_state_protein(
-    message: types.Message, state: FSMContext
-) -> None:
+async def record_state_protein(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        message.answer('It must be a number(gram)')
+        await message.answer('It must be a number(gram)')
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
@@ -355,9 +401,9 @@ async def record_state_protein(
     await message.answer('Input the weight of fat per 100 grams')
 
 
-async def record_state_fat(message: types.Message, state: FSMContext) -> None:
+async def record_state_fat(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        message.answer('It must be a number(gram)')
+        await message.answer('It must be a number(gram)')
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
@@ -367,9 +413,9 @@ async def record_state_fat(message: types.Message, state: FSMContext) -> None:
     await message.answer('Input the weight of fat per 100 grams')
 
 
-async def record_state_carb(message: types.Message, state: FSMContext) -> None:
+async def record_state_carb(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        message.answer('It must be a number(gram)')
+        await message.answer('It must be a number(gram)')
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
@@ -398,6 +444,10 @@ def register_user_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(command_profile, filters.Command('profile'))
     dp.register_message_handler(command_record, filters.Command('record'))
     dp.register_message_handler(command_statistics, filters.Command('stat'))
+    dp.register_message_handler(command_records, filters.Command('records'))
+    dp.register_message_handler(
+        command_cancel, filters.Command('cancel'), state='*'
+    )
 
     # CALLBACKS
     dp.register_callback_query_handler(
@@ -411,10 +461,10 @@ def register_user_handlers(dp: Dispatcher) -> None:
         callback_profile, filters.Text('profile')
     )
     dp.register_callback_query_handler(
-        callback_statistics, filters.Text('statistics')
+        callback_statistics, filters.Text(startswith='statistics')
     )
     dp.register_callback_query_handler(
-        callback_statistics_date, filters.Text(startswith='statistics_')
+        callback_records, filters.Text(startswith='records')
     )
 
     # STATES

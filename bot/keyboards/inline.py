@@ -1,6 +1,11 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from .utils import TIME_ZONES, TIME_ZONE_START_PAGE, get_prev_day, get_next_day
+from .utils import (
+    TIME_ZONES,
+    TIME_ZONE_START_PAGE,
+    get_prev_day,
+    get_next_day,
+)
 
 
 def get_yesno_keyboard(row_width=2, prefix=None) -> InlineKeyboardMarkup:
@@ -68,7 +73,36 @@ def get_statistics_keyboard(date: str):
         ),
     )
     keyboard.add(
-        InlineKeyboardButton('Record', callback_data='record'),
+        InlineKeyboardButton('Menu', callback_data='to_menu'),
+    )
+    return keyboard
+
+
+def get_records_keyboard(date: str, page: int, pages: int):
+    keyboard = InlineKeyboardMarkup(1)
+    if pages > 0:
+        keyboard.row(
+            InlineKeyboardButton(
+                '<<', callback_data=f'records_{date}_p{max(0, page - 1)}'
+            ),
+            InlineKeyboardButton(
+                f'Page {page + 1}/{pages}', callback_data=f'records_{date}_p0'
+            ),
+            InlineKeyboardButton(
+                '>>',
+                callback_data=f'records_{date}_p{min(pages - 1, page + 1)}',
+            ),
+        )
+    keyboard.row(
+        InlineKeyboardButton(
+            '<<', callback_data=f'records_{get_prev_day(date)}_p0'
+        ),
+        InlineKeyboardButton(f'{date}', callback_data=''),
+        InlineKeyboardButton(
+            '>>', callback_data=f'records_{get_next_day(date)}_p0'
+        ),
+    )
+    keyboard.add(
         InlineKeyboardButton('Menu', callback_data='to_menu'),
     )
     return keyboard
@@ -81,12 +115,12 @@ START_INLINE_KEYBOARD.row(
     )
 )
 
-MENU_INLINE_KEYBOARD = InlineKeyboardMarkup()
-MENU_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('Record', callback_data='record')
-)
-MENU_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('Statistics', callback_data='statistics')
+MENU_INLINE_KEYBOARD = InlineKeyboardMarkup(1)
+MENU_INLINE_KEYBOARD.add(
+    InlineKeyboardButton('Record', callback_data='record'),
+    InlineKeyboardButton('Statistics', callback_data='statistics'),
+    InlineKeyboardButton('Records', callback_data='records'),
+    InlineKeyboardButton('Settings', callback_data='settings'),
 )
 
 PROFILE_INLINE_KEYBOARD = InlineKeyboardMarkup()
