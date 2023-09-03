@@ -38,7 +38,7 @@ def gram_to_ounce(val: float | int):
     return val / 28.3495
 
 
-def timezone_to_deltatime(zone: str) -> timedelta:  # zone struct "+0[:00]"
+def timezone_to_deltatime(zone: str) -> timedelta:  # zone struct '+0[:00]'
     zone_splitted = zone[1:].split(':')
     hour = int(zone_splitted[0])
     minutes = 0

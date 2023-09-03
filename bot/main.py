@@ -15,4 +15,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
     dp = Dispatcher(bot, storage=MemoryStorage())
-    executor.start_polling(dispatcher=dp, on_startup=__on_startup)
+    executor.start_polling(
+        dispatcher=dp, skip_updates=not DEBUG, on_startup=__on_startup
+    )

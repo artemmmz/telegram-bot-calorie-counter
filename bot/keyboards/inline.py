@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from .utils import TIME_ZONES, TIME_ZONE_START_PAGE
+from .utils import TIME_ZONES, TIME_ZONE_START_PAGE, get_prev_day, get_next_day
 
 
 def get_yesno_keyboard(row_width=2, prefix=None) -> InlineKeyboardMarkup:
@@ -35,7 +35,9 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     keyboard = InlineKeyboardMarkup(row_width=rows)
     keyboard.add(
         *[
-            InlineKeyboardButton(f'UTC{tz}', callback_data=f'zone_{tz}')
+            InlineKeyboardButton(
+                f'UTC{tz}', callback_data=f'zone_{tz.zfill(3)}'
+            )
             for tz in TIME_ZONES[
                 rows * cols * page: rows * cols * (page + 1)  # fmt: skip
             ]
@@ -55,6 +57,23 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     return keyboard
 
 
+def get_statistics_keyboard(date: str):
+    keyboard = InlineKeyboardMarkup(1)
+    keyboard.row(
+        InlineKeyboardButton(
+            '<<', callback_data=f'statistics_{get_prev_day(date)}'
+        ),
+        InlineKeyboardButton(
+            '>>', callback_data=f'statistics_{get_next_day(date)}'
+        ),
+    )
+    keyboard.add(
+        InlineKeyboardButton('Record', callback_data='record'),
+        InlineKeyboardButton('Menu', callback_data='to_menu'),
+    )
+    return keyboard
+
+
 START_INLINE_KEYBOARD = InlineKeyboardMarkup()
 START_INLINE_KEYBOARD.row(
     InlineKeyboardButton(
@@ -65,9 +84,6 @@ START_INLINE_KEYBOARD.row(
 MENU_INLINE_KEYBOARD = InlineKeyboardMarkup()
 MENU_INLINE_KEYBOARD.row(
     InlineKeyboardButton('Record', callback_data='record')
-)
-MENU_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('Profile', callback_data='profile')
 )
 MENU_INLINE_KEYBOARD.row(
     InlineKeyboardButton('Statistics', callback_data='statistics')

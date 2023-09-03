@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:slim
 WORKDIR /opt/project
 COPY bot .
 COPY requirements.txt .

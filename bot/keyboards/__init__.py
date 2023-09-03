@@ -11,4 +11,5 @@ from .inline import (  # noqa: F401
     get_keyboard_of_nums,
     get_yesno_keyboard,
     get_timezone_keyboard,
+    get_statistics_keyboard,
 )
