@@ -1,5 +1,7 @@
 from db import Database
 
+from datetime import datetime
+
 db_users = Database('users')
 
 
@@ -94,32 +96,75 @@ def get_user(user_id: int, __date_string: str | None = None):
         {'$unset': 'other'},
     ]
     if __date_string:
-        stat_query = [
+        record_query = [
+            {
+                '$set': {
+                    'date_str': __date_string,
+                    'today_date': {
+                        '$dateToParts': {
+                            'date': datetime.utcnow(),
+                            'timezone': '$settings.utc',
+                        }
+                    },
+                }
+            },
+            {
+                '$set': {
+                    'start_date': {
+                        '$cond': {
+                            'if': {'$eq': ['$date_str', 'today']},
+                            'then': {
+                                '$dateFromParts': {
+                                    'year': '$today_date.year',
+                                    'month': '$today_date.month',
+                                    'day': '$today_date.day',
+                                    'timezone': '$settings.utc',
+                                }
+                            },
+                            'else': {
+                                '$dateFromString': {
+                                    'dateString': '$date_str',
+                                    'timezone': '$settings.utc',
+                                }
+                            },
+                        }
+                    },
+                    'today_str': {
+                        '$dateToString': {
+                            'date': {
+                                '$dateFromParts': {
+                                    'year': '$today_date.year',
+                                    'month': '$today_date.month',
+                                    'day': '$today_date.day',
+                                }
+                            },
+                            'format': '%Y-%m-%d',
+                        }
+                    },
+                }
+            },
+            {
+                '$set': {
+                    'date_str': {
+                        '$cond': {
+                            'if': {'$eq': ['$date_str', 'today']},
+                            'then': '$today_str',
+                            'else': '$date_str',
+                        }
+                    },
+                    'end_date': {
+                        '$dateAdd': {
+                            'startDate': '$start_date',
+                            'unit': 'day',
+                            'amount': 1,
+                        }
+                    },
+                }
+            },
             {
                 '$facet': {
                     'other': [],
-                    'statistics': [
-                        {
-                            '$set': {
-                                'start_date': {
-                                    '$dateFromString': {
-                                        'dateString': __date_string,
-                                        'timezone': '$settings.utc',
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            '$set': {
-                                'end_date': {
-                                    '$dateAdd': {
-                                        'startDate': '$start_date',
-                                        'unit': 'day',
-                                        'amount': 1,
-                                    }
-                                }
-                            }
-                        },
+                    'records_date': [
                         {'$unwind': '$records_conv'},
                         {
                             '$match': {
@@ -140,19 +185,18 @@ def get_user(user_id: int, __date_string: str | None = None):
                                                     ]
                                                 },
                                             ]
-                                        },
-                                        {'$eq': ['$records_conv.time', None]},
+                                        }
                                     ]
                                 }
                             }
                         },
                         {
-                            '$group': {
-                                '_id': None,
-                                'calories': {'$sum': '$records_conv.calories'},
-                                'protein': {'$sum': '$records_conv.protein'},
-                                'fat': {'$sum': '$records_conv.fat'},
-                                'carb': {'$sum': '$records_conv.carb'},
+                            '$project': {
+                                'time_str': '$records_conv.time_str',
+                                'protein': '$records_conv.protein',
+                                'fat': '$records_conv.fat',
+                                'carb': '$records_conv.carb',
+                                'calories': '$records_conv.calories',
                             }
                         },
                     ],
@@ -165,10 +209,19 @@ def get_user(user_id: int, __date_string: str | None = None):
                     }
                 }
             },
-            {'$set': {'statistics': {'$first': '$statistics'}}},
-            {'$unset': 'other'},
+            {
+                '$set': {
+                    'statistics': {
+                        'protein': {'$sum': '$records_date.protein'},
+                        'fat': {'$sum': '$records_date.fat'},
+                        'carb': {'$sum': '$records_date.carb'},
+                        'calories': {'$sum': '$records_date.calories'},
+                    }
+                }
+            },
+            {'$unset': ['other', 'start_date', 'end_date', 'today_date']},
         ]
-        query = [*query, *stat_query]
+        query = [*query, *record_query]
     answer = db_users.collection.aggregate(query)
     if answer.alive:
         return list(answer)[0]

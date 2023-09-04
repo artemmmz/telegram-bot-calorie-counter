@@ -1,7 +1,7 @@
-from datetime import datetime, date
+from datetime import datetime
 from math import ceil
 
-from aiogram import Dispatcher, filters, types
+from aiogram import Dispatcher, filters, types, exceptions
 from aiogram.dispatcher import FSMContext
 
 from config import TELEGRAM_BOT_SUPERUSER_ID, RECORDS_PAGE_NUM
@@ -15,6 +15,7 @@ from keyboards import (
     LANGUAGE_INLINE_KEYBOARD,
     UNIT_INLINE_KEYBOARD,
     SETTINGS_END_INLINE_KEYBOARD,
+    SETTINGS_INLINE_KEYBOARD,
     get_keyboard_of_nums,
     get_timezone_keyboard,
     get_statistics_keyboard,
@@ -50,7 +51,11 @@ async def command_menu(message: types.Message):
             '\t- Record(/record)'
             ' - record your calories by proteins, fats and carbs\n'
             '\t- Statistics(/stat)'
-            ' - your calorie, protein, fat and carb statistics '
+            ' - your calorie, protein, fat and carb statistics\n'
+            '\t- Records(/records)'
+            ' - list of your records\n'
+            '\t- Settings(/settings)'
+            ' - settings mass unit, timezone, language and etc.\n'
         ),
         parse_mode='HTML',
         reply_markup=MENU_INLINE_KEYBOARD,
@@ -66,31 +71,29 @@ async def command_statistics(
 ):
     edit_message = True
     if date_string is None:
-        date_string = date.today().isoformat()
+        date_string = 'today'
         edit_message = False
     user_id = message.from_user.id
     user = get_user(user_id, date_string)
+    date_string = user['date_str']
 
     text = (
-        'Your statistics for {ds}:\n\n'
+        'Your statistics:\n\n'
         'Protein: {s[protein]}/{l[protein]} {u}\n'
         'Fat: {s[fat]}/{l[fat]} {u}\n'
         'Carb: {s[carb]}/{l[carb]} {u}\n'
         'Calories: {s[calories]}/{l[calories]} kcal\n'
     ).format(
-        ds=date_string,
         u=user['settings']['mass'],
         s=user['statistics'],
         l=user['limits'],
     )
+    reply_markup = get_statistics_keyboard(date_string, user['today_str'])
+
     if edit_message:
-        await message.edit_text(
-            text, reply_markup=get_statistics_keyboard(date_string)
-        )
+        await message.edit_text(text, reply_markup=reply_markup)
     else:
-        await message.answer(
-            text, reply_markup=get_statistics_keyboard(date_string)
-        )
+        await message.answer(text, reply_markup=reply_markup)
 
 
 async def command_records(
@@ -101,24 +104,59 @@ async def command_records(
     user_id = message.from_user.id
     edit_message = True
     if date_string is None:
-        date_string = date.today().isoformat()
+        date_string = 'today'
         edit_message = False
     if page is None:
         page = 0
     user = get_user(user_id, date_string)
-    records = []
-    # TODO
+    date_string = user['date_str']
+    records_date = user['records_date']
+    records_date_page = records_date[
+        page * RECORDS_PAGE_NUM: (page + 1) * RECORDS_PAGE_NUM  # fmt: skip
+    ]
+    records = [
+        (
+            '\tTime: {r[time_str]}\n'
+            '\tProtein: {r[protein]} {unit}\n'
+            '\tFat: {r[fat]} {unit}\n'
+            '\tCarb: {r[carb]} {unit}\n'
+            '\tCalories: {r[calories]} kcal\n'
+        ).format(r=record, unit=user['settings']['mass'])
+        for record in records_date_page
+    ]
 
-    records_text = '\n'.join(records)
-    text = 'Records for {ds}\n\n{rt}'.format(ds=date_string, rt=records_text)
+    records_text = '\n'.join(records) if len(records) > 0 else 'Empty'
+    text = 'List of records\n\n{rt}'.format(rt=records_text)
     reply_markup = get_records_keyboard(
-        date_string, page, ceil(len(user['records_conv']) / RECORDS_PAGE_NUM)
+        date_string,
+        user['today_str'],
+        page,
+        ceil(len(records_date) / RECORDS_PAGE_NUM),
     )
 
     if edit_message:
         await message.edit_text(text, reply_markup=reply_markup)
     else:
         await message.answer(text, reply_markup=reply_markup)
+
+
+async def command_settings(
+    message: types.Message,
+    setting: str | None = None,
+    value: str | None = None,
+):
+    user_id = message.from_user.id
+    user = db_users.get_records({'user_id': user_id}, limit=1)
+
+    text = (
+        'SETTINGS\n\n'
+        'Language: {s[language]}\n'
+        'Mass unit: {s[mass]}\n'
+        'Timezone: UTC{s[utc]}\n\n'
+        'What change?'
+    ).format(s=user['settings'])
+
+    await message.answer(text, reply_markup=SETTINGS_INLINE_KEYBOARD)
 
 
 async def command_cancel(message: types.Message, state: FSMContext):
@@ -165,7 +203,23 @@ async def callback_records(callback_query: types.CallbackQuery):
         date_string = params[0]
         page = int(params[1][len('p'):])  # fmt: skip
     callback_query.message.from_user = callback_query.from_user
-    await command_records(callback_query.message, date_string, page)
+    try:
+        await command_records(callback_query.message, date_string, page)
+    except exceptions.MessageNotModified:
+        await callback_query.answer('Error', show_alert=True)
+
+
+async def callback_settings(callback_query: types.CallbackQuery):
+    params_raw = callback_query.data[len('settings_'):]  # fmt: skip
+    callback_query.message.from_user = callback_query.from_user
+    await callback_query.message.delete()
+    setting, value = None, None
+    if params_raw != '':
+        params = params_raw.split('_')
+        setting = params[0]
+        if len(params) >= 2:
+            value = params[1]
+    await command_settings(callback_query.message, setting, value)
 
 
 async def callback_cancel(
@@ -181,7 +235,7 @@ async def settings_state_language(
     callback_query: types.CallbackQuery, state: FSMContext
 ) -> None:
     await callback_query.message.delete()
-    lang = callback_query.data[len('language_'):]  # fmt: skip
+    lang = callback_query.data[len('settings_language_'):]  # fmt: skip
     await state.update_data({'language': lang})
     await SettingsState.next()
 
@@ -194,7 +248,7 @@ async def settings_state_unit(
     callback_query: types.CallbackQuery, state: FSMContext
 ) -> None:
     await callback_query.message.delete()
-    answer = callback_query.data[len('unit_'):]  # fmt: skip
+    answer = callback_query.data[len('settings_unit_'):]  # fmt: skip
     await state.update_data({'mass': answer})
     await SettingsState.next()
 
@@ -214,7 +268,7 @@ async def settings_state_time_zone(
     callback_query: types.CallbackQuery, state: FSMContext
 ):
     await callback_query.message.delete()
-    answer = callback_query.data[len('zone_'):]  # fmt: skip
+    answer = callback_query.data[len('settings_zone_'):]  # fmt: skip
     await state.update_data({'utc': answer})
 
     data = await state.get_data()
@@ -448,6 +502,7 @@ def register_user_handlers(dp: Dispatcher) -> None:
     dp.register_message_handler(
         command_cancel, filters.Command('cancel'), state='*'
     )
+    dp.register_message_handler(command_settings, filters.Command('settings'))
 
     # CALLBACKS
     dp.register_callback_query_handler(
@@ -466,6 +521,9 @@ def register_user_handlers(dp: Dispatcher) -> None:
     dp.register_callback_query_handler(
         callback_records, filters.Text(startswith='records')
     )
+    dp.register_callback_query_handler(
+        callback_settings, filters.Text(startswith='settings')
+    )
 
     # STATES
     # Settings state
@@ -479,7 +537,7 @@ def register_user_handlers(dp: Dispatcher) -> None:
     )
     dp.register_callback_query_handler(
         settings_state_time_zone,
-        filters.Text(startswith='zone_'),
+        filters.Text(startswith='settings_zone_'),
         state=SettingsState.time_zone,
     )
     dp.register_callback_query_handler(
