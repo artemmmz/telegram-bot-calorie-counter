@@ -10,7 +10,7 @@ USER_DEFAULT_VALUES = {
     'is_admin': False,
     'is_superuser': False,
     'limits': {'calories': 0, 'protein': 0, 'fat': 0, 'carb': 0},
-    'settings': {'language': 'en-uk', 'utc': '+00', 'mass': 'g'},
+    'settings': {'utc': '+00', 'mass': 'g'},
     'records': [],
 }
 

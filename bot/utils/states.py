@@ -2,7 +2,6 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
 class SettingsState(StatesGroup):
-    language = State()
     mass_unit = State()
     time_zone = State()
 

@@ -1,9 +1,14 @@
 from os import getenv
+from pathlib import Path
 
 ''' Uncomment this if you're using .env file '''
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# DIRS
+BASE_DIR = Path(__file__).parent
+LOCALES_DIR = BASE_DIR / 'locales'
 
 # APP
 DEBUG: bool | None = getenv('DEBUG', '0').lower() in ['1', 'true', 'yes']
@@ -28,9 +33,3 @@ DB_CONNECTION_STRING = (
     f':{DB_SERVER_PORT}/'
     f'{DB_NAME}'
 )
-
-# SETTINGS
-LANGUAGES = ['en']
-
-# PAGES
-RECORDS_PAGE_NUM = 3

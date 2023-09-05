@@ -1,0 +1,236 @@
+# English translations for bot.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the bot project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bot VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-09-05 21:00+0300\n"
+"PO-Revision-Date: 2023-09-05 18:50+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../bot/handlers/user/main.py:35
+msgid ""
+"Hello!\n"
+"Select your mass unit"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:51
+msgid ""
+"<b>MENU</b>\n"
+"\n"
+"\t- Record(/record) - record your calories by proteins, fats and carbs\n"
+"\t- Statistics(/stat) - your calorie, protein, fat and carb statistics\n"
+"\t- Records(/records) - list of your records\n"
+"\t- Settings(/settings) - settings mass unit, timezone, language and etc."
+"\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:68
+msgid "Your profile\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:82
+msgid ""
+"Your statistics:\n"
+"\n"
+"Protein: {s[protein]}/{l[protein]} {u}\n"
+"Fat: {s[fat]}/{l[fat]} {u}\n"
+"Carb: {s[carb]}/{l[carb]} {u}\n"
+"Calories: {s[calories]}/{l[calories]} kcal\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:120
+msgid ""
+"\tTime: {r[time_str]}\n"
+"\tProtein: {r[protein]} {unit}\n"
+"\tFat: {r[fat]} {unit}\n"
+"\tCarb: {r[carb]} {unit}\n"
+"\tCalories: {r[calories]} kcal\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:131
+msgid ""
+"List of records\n"
+"\n"
+"{rt}"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:153
+msgid ""
+"SETTINGS\n"
+"\n"
+"Mass unit: {s[mass]}\n"
+"Timezone: UTC{s[utc]}\n"
+"\n"
+"What change?"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:210
+msgid "Error"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:244
+msgid "Select your time zome"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:269
+msgid ""
+"Your choices saved\n"
+"Calculate your limits?"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:278
+msgid ""
+"Choose what do you want:\n"
+"\n"
+"1. Weight gain\n"
+"2. Control of the diet\n"
+"3. For the weigth loss\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:297
+msgid "Choose your gender"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:309
+msgid "Input your age"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:314 ../bot/handlers/user/main.py:324
+#: ../bot/handlers/user/main.py:334
+msgid "It must be a number"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:319
+msgid "Input your growth(rounded)"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:329
+msgid "Input your weight(rounded)"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:340
+msgid ""
+"Choose your activity coefficient:\n"
+"\n"
+"1. Minimum physical activity\n"
+"2. Workout 3 times per week\n"
+"3. Workout 5 times per week\n"
+"4. Intensive workout 5 times per week\n"
+"5. Workout every day\n"
+"6. Intensive workout every day or 2 times per day\n"
+"7. Physical activity every day + physical work\n"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:367
+msgid ""
+"Your calorie limit: {result} kcal\n"
+"Your protein limit: {result_limits[0]} g\n"
+"Your fat limit: {result_limits[1]} g\n"
+"Your carb limit: {result_limits[2]} g\n"
+"Write this number to your calorie limit?"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:415
+msgid "Input the weight of eaten"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:425 ../bot/handlers/user/main.py:436
+#: ../bot/handlers/user/main.py:448 ../bot/handlers/user/main.py:460
+msgid "It must be a number(gram)"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:431
+msgid "Input the weight of protein per 100 grams"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:443 ../bot/handlers/user/main.py:455
+msgid "Input the weight of fat per 100 grams"
+msgstr ""
+
+#: ../bot/handlers/user/main.py:475
+msgid "Recorded"
+msgstr ""
+
+#: ../bot/utils/texts.py:12
+msgid "yes"
+msgstr ""
+
+#: ../bot/utils/texts.py:13
+msgid "no"
+msgstr ""
+
+#: ../bot/utils/texts.py:15
+msgid "menu"
+msgstr ""
+
+#: ../bot/utils/texts.py:16
+msgid "calculate"
+msgstr ""
+
+#: ../bot/utils/texts.py:17
+msgid "record"
+msgstr ""
+
+#: ../bot/utils/texts.py:18
+msgid "statistics"
+msgstr ""
+
+#: ../bot/utils/texts.py:19
+msgid "records"
+msgstr ""
+
+#: ../bot/utils/texts.py:20
+msgid "settings"
+msgstr ""
+
+#: ../bot/utils/texts.py:22
+msgid "page"
+msgstr ""
+
+#: ../bot/utils/texts.py:24
+msgid "male"
+msgstr ""
+
+#: ../bot/utils/texts.py:25
+msgid "female"
+msgstr ""
+
+#: ../bot/utils/texts.py:27
+msgid "change value"
+msgstr ""
+
+#: ../bot/utils/texts.py:29
+msgid "mass unit"
+msgstr ""
+
+#: ../bot/utils/texts.py:30
+msgid "timezone"
+msgstr ""
+
+#: ../bot/utils/texts.py:32
+msgid "g"
+msgstr ""
+
+#: ../bot/utils/texts.py:33
+msgid "gram"
+msgstr ""
+
+#: ../bot/utils/texts.py:35
+msgid "oz"
+msgstr ""
+
+#: ../bot/utils/texts.py:36
+msgid "ounce"
+msgstr ""
+

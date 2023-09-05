@@ -1,9 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-# from config import LANGUAGES
+from utils.consts import TIME_ZONES, MASS_UNITS, TIME_ZONE_START_PAGE
+from utils.texts import Text
 from .utils import (
-    TIME_ZONES,
-    TIME_ZONE_START_PAGE,
     get_prev_day,
     get_next_day,
 )
@@ -14,8 +13,8 @@ def get_yesno_keyboard(row_width=2, prefix=None) -> InlineKeyboardMarkup:
         prefix = f'{prefix}_'
     keyboard = InlineKeyboardMarkup(row_width)
     keyboard.add(
-        InlineKeyboardButton('Yes', callback_data=f'{prefix}1'),
-        InlineKeyboardButton('No', callback_data=f'{prefix}0'),
+        InlineKeyboardButton(Text.YES_CAP, callback_data=f'{prefix}1'),
+        InlineKeyboardButton(Text.NO_CAP, callback_data=f'{prefix}0'),
     )
     return keyboard
 
@@ -42,7 +41,7 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     keyboard.add(
         *[
             InlineKeyboardButton(
-                f'UTC{tz}', callback_data=f'settings_zone_{tz.zfill(3)}'
+                f'UTC{tz}', callback_data=f'settings_zone_{tz}'
             )
             for tz in TIME_ZONES[
                 rows * cols * page: rows * cols * (page + 1)  # fmt: skip
@@ -75,7 +74,9 @@ def get_statistics_keyboard(date: str, today_date: str):
         ),
     )
     keyboard.add(
-        InlineKeyboardButton('<<< MENU', callback_data='to_menu'),
+        InlineKeyboardButton(
+            f'<<< {Text.MENU.upper()}', callback_data='to_menu'
+        ),
     )
     return keyboard
 
@@ -88,7 +89,8 @@ def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
                 '<<', callback_data=f'records_{date}_p{max(0, page - 1)}'
             ),
             InlineKeyboardButton(
-                f'Page {page + 1}/{pages}', callback_data=f'records_{date}_p0'
+                f'{Text.PAGE_CAP} {page + 1}/{pages}',
+                callback_data=f'records_{date}_p0',
             ),
             InlineKeyboardButton(
                 '>>',
@@ -107,67 +109,82 @@ def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
         ),
     )
     keyboard.add(
-        InlineKeyboardButton('<<< MENU', callback_data='to_menu'),
+        InlineKeyboardButton(f'<<< {Text.MENU_UP}', callback_data='to_menu'),
     )
     return keyboard
 
 
-START_INLINE_KEYBOARD = InlineKeyboardMarkup()
-START_INLINE_KEYBOARD.row(
-    InlineKeyboardButton(
-        'Calculate calorie', callback_data='calculate_calorie'
+def get_start_inline_keyboard():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(
+        InlineKeyboardButton(
+            Text.CALCULATE_CAP, callback_data='calculate_calorie'
+        )
     )
-)
+    return keyboard
 
-MENU_INLINE_KEYBOARD = InlineKeyboardMarkup(1)
-MENU_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('Record', callback_data='record'),
-    InlineKeyboardButton('Statistics', callback_data='statistics'),
-    InlineKeyboardButton('Records', callback_data='records'),
-    InlineKeyboardButton('Settings', callback_data='settings'),
-)
 
-LANGUAGE_INLINE_KEYBOARD = InlineKeyboardMarkup(2)
-LANGUAGE_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('English', callback_data='settings_language_en')
-)
+def get_menu_inline_keyboard():
+    keyboard = InlineKeyboardMarkup(1)
+    keyboard.add(
+        InlineKeyboardButton(Text.RECORD_CAP, callback_data='record'),
+        InlineKeyboardButton(Text.STATISTICS_CAP, callback_data='statistics'),
+        InlineKeyboardButton(Text.RECORDS_CAP, callback_data='records'),
+        InlineKeyboardButton(Text.SETTINGS_CAP, callback_data='settings'),
+    )
+    return keyboard
 
-UNIT_INLINE_KEYBOARD = InlineKeyboardMarkup()
-UNIT_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('Gram', callback_data='settings_unit_g'),
-    InlineKeyboardButton('Ounce', callback_data='settings_unit_oz'),
-)
 
-SETTINGS_END_INLINE_KEYBOARD = InlineKeyboardMarkup()
-SETTINGS_END_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('Yes', callback_data='calculate_calorie'),
-    InlineKeyboardButton('No', callback_data='to_menu'),
-)
+def get_unit_inline_keyboard():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(
+        *[
+            InlineKeyboardButton(
+                text.capitalize(), callback_data=f'settings_unit_{unit}'
+            )
+            for unit, text in MASS_UNITS.items()
+        ]
+    )
+    return keyboard
 
-GENDER_INLINE_KEYBOARD = InlineKeyboardMarkup()
-GENDER_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('Male', callback_data='gender_0'),
-    InlineKeyboardButton('Female', callback_data='gender_1'),
-)
 
-CALCULATE_FINISH_INLINE_KEYBOARD = get_yesno_keyboard(
-    prefix='calculate_finish'
-)
-CALCULATE_FINISH_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('Change value', callback_data='calculate_finish_2')
-)
+def get_settings_end_inline_keyboard():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(
+        InlineKeyboardButton(Text.YES_CAP, callback_data='calculate_calorie'),
+        InlineKeyboardButton(Text.NO_CAP, callback_data='to_menu'),
+    )
+    return keyboard
 
-OPEN_MENU_INLINE_KEYBOARD = InlineKeyboardMarkup()
-OPEN_MENU_INLINE_KEYBOARD.add(
-    InlineKeyboardButton('Go to menu', callback_data='to_menu')
-)
 
-SETTINGS_INLINE_KEYBOARD = InlineKeyboardMarkup(3)
-SETTINGS_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('Language', callback_data='settings_language'),
-    InlineKeyboardButton('Mass unit', callback_data='settings_unit'),
-    InlineKeyboardButton('Timezone', callback_data='settings_zone'),
-)
-SETTINGS_INLINE_KEYBOARD.row(
-    InlineKeyboardButton('<<< MENU', callback_data='to_menu')
-)
+def get_gender_inline_keyboard():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.row(
+        InlineKeyboardButton(Text.MALE_CAP, callback_data='gender_0'),
+        InlineKeyboardButton(Text.FEMALE_CAP, callback_data='gender_1'),
+    )
+    return keyboard
+
+
+def get_calculate_finish_inline_keyboard():
+    keyboard = get_yesno_keyboard(prefix='calculate_finish')
+    keyboard.add(
+        InlineKeyboardButton(
+            Text.CHANGE_VALUE_CAP, callback_data='calculate_finish_2'
+        )
+    )
+    return keyboard
+
+
+def get_settings_inline_keyboard():
+    keyboard = InlineKeyboardMarkup(3)
+    keyboard.row(
+        InlineKeyboardButton(
+            Text.MASS_UNIT_CAP, callback_data='settings_unit'
+        ),
+        InlineKeyboardButton(Text.TIMEZONE_CAP, callback_data='settings_zone'),
+    )
+    keyboard.row(
+        InlineKeyboardButton(f'<<< {Text.MENU_UP}', callback_data='to_menu')
+    )
+    return keyboard

@@ -4,36 +4,38 @@ from math import ceil
 from aiogram import Dispatcher, filters, types, exceptions
 from aiogram.dispatcher import FSMContext
 
-from config import TELEGRAM_BOT_SUPERUSER_ID, RECORDS_PAGE_NUM
+from config import TELEGRAM_BOT_SUPERUSER_ID
 from db import Database
 from db.structures import create_user, create_record
 from db.utils import get_user
 from keyboards import (
-    GENDER_INLINE_KEYBOARD,
-    MENU_INLINE_KEYBOARD,
-    CALCULATE_FINISH_INLINE_KEYBOARD,
-    LANGUAGE_INLINE_KEYBOARD,
-    UNIT_INLINE_KEYBOARD,
-    SETTINGS_END_INLINE_KEYBOARD,
-    SETTINGS_INLINE_KEYBOARD,
+    get_gender_inline_keyboard,
+    get_menu_inline_keyboard,
+    get_calculate_finish_inline_keyboard,
+    get_unit_inline_keyboard,
+    get_settings_end_inline_keyboard,
+    get_settings_inline_keyboard,
     get_keyboard_of_nums,
     get_timezone_keyboard,
     get_statistics_keyboard,
     get_records_keyboard,
 )
+from utils.consts import RECORDS_PAGE_NUM
 from utils.utils import kcal_limit, limits
+from utils.texts import gettext
 from utils.states import CalculateState, RecordState, SettingsState
 
 db_users = Database('users')
+_ = gettext
 
 
 # COMMANDS
 async def command_start(message: types.Message):
     await message.answer(
-        ('Hello!\n' 'Select is your language'),
-        reply_markup=LANGUAGE_INLINE_KEYBOARD,
+        _('Hello!\nSelect your mass unit'),
+        reply_markup=get_unit_inline_keyboard(),
     )
-    await SettingsState.language.set()
+    await SettingsState.mass_unit.set()
     user_id = message.from_user.id
     db_users.add_records(
         create_user(
@@ -46,7 +48,7 @@ async def command_start(message: types.Message):
 
 async def command_menu(message: types.Message):
     await message.answer(
-        (
+        _(
             '<b>MENU</b>\n\n'
             '\t- Record(/record)'
             ' - record your calories by proteins, fats and carbs\n'
@@ -58,12 +60,12 @@ async def command_menu(message: types.Message):
             ' - settings mass unit, timezone, language and etc.\n'
         ),
         parse_mode='HTML',
-        reply_markup=MENU_INLINE_KEYBOARD,
+        reply_markup=get_menu_inline_keyboard(),
     )
 
 
 async def command_profile(message: types.Message):
-    await message.answer(('Your profile\n'))
+    await message.answer(_('Your profile\n'))
 
 
 async def command_statistics(
@@ -77,7 +79,7 @@ async def command_statistics(
     user = get_user(user_id, date_string)
     date_string = user['date_str']
 
-    text = (
+    text = _(
         'Your statistics:\n\n'
         'Protein: {s[protein]}/{l[protein]} {u}\n'
         'Fat: {s[fat]}/{l[fat]} {u}\n'
@@ -115,7 +117,7 @@ async def command_records(
         page * RECORDS_PAGE_NUM: (page + 1) * RECORDS_PAGE_NUM  # fmt: skip
     ]
     records = [
-        (
+        _(
             '\tTime: {r[time_str]}\n'
             '\tProtein: {r[protein]} {unit}\n'
             '\tFat: {r[fat]} {unit}\n'
@@ -126,7 +128,7 @@ async def command_records(
     ]
 
     records_text = '\n'.join(records) if len(records) > 0 else 'Empty'
-    text = 'List of records\n\n{rt}'.format(rt=records_text)
+    text = _('List of records\n\n{rt}').format(rt=records_text)
     reply_markup = get_records_keyboard(
         date_string,
         user['today_str'],
@@ -148,15 +150,14 @@ async def command_settings(
     user_id = message.from_user.id
     user = db_users.get_records({'user_id': user_id}, limit=1)
 
-    text = (
+    text = _(
         'SETTINGS\n\n'
-        'Language: {s[language]}\n'
         'Mass unit: {s[mass]}\n'
         'Timezone: UTC{s[utc]}\n\n'
         'What change?'
     ).format(s=user['settings'])
 
-    await message.answer(text, reply_markup=SETTINGS_INLINE_KEYBOARD)
+    await message.answer(text, reply_markup=get_settings_inline_keyboard())
 
 
 async def command_cancel(message: types.Message, state: FSMContext):
@@ -206,7 +207,7 @@ async def callback_records(callback_query: types.CallbackQuery):
     try:
         await command_records(callback_query.message, date_string, page)
     except exceptions.MessageNotModified:
-        await callback_query.answer('Error', show_alert=True)
+        await callback_query.answer(_('Error'), show_alert=True)
 
 
 async def callback_settings(callback_query: types.CallbackQuery):
@@ -231,19 +232,6 @@ async def callback_cancel(
 
 # STATES
 # Settings state
-async def settings_state_language(
-    callback_query: types.CallbackQuery, state: FSMContext
-) -> None:
-    await callback_query.message.delete()
-    lang = callback_query.data[len('settings_language_'):]  # fmt: skip
-    await state.update_data({'language': lang})
-    await SettingsState.next()
-
-    await callback_query.message.answer(
-        'Select your mass unit', reply_markup=UNIT_INLINE_KEYBOARD
-    )
-
-
 async def settings_state_unit(
     callback_query: types.CallbackQuery, state: FSMContext
 ) -> None:
@@ -253,7 +241,7 @@ async def settings_state_unit(
     await SettingsState.next()
 
     await callback_query.message.answer(
-        'Select your time zome', reply_markup=get_timezone_keyboard()
+        _('Select your time zome'), reply_markup=get_timezone_keyboard()
     )
 
 
@@ -278,8 +266,8 @@ async def settings_state_time_zone(
     await state.finish()
 
     await callback_query.message.answer(
-        'Your choices saved\nCalculate your limits?',
-        reply_markup=SETTINGS_END_INLINE_KEYBOARD,
+        _('Your choices saved\nCalculate your limits?'),
+        reply_markup=get_settings_end_inline_keyboard(),
     )
 
 
@@ -287,7 +275,7 @@ async def settings_state_time_zone(
 async def command_calculate_calories(message: types.Message):
     await CalculateState.for_what.set()
     await message.answer(
-        (
+        _(
             'Choose what do you want:\n\n'
             '1. Weight gain\n'
             '2. Control of the diet\n'
@@ -306,7 +294,7 @@ async def calculate_state_for_what(
     await CalculateState.next()
 
     await callback_query.message.answer(
-        'Choose your gender', reply_markup=GENDER_INLINE_KEYBOARD
+        _('Choose your gender'), reply_markup=get_gender_inline_keyboard()
     )
 
 
@@ -318,38 +306,38 @@ async def calculate_state_gender(
     await state.update_data({'gender': answer})
     await CalculateState.next()
 
-    await callback_query.message.answer('Input your age')
+    await callback_query.message.answer(_('Input your age'))
 
 
 async def calculate_state_age(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number')
+        await message.answer(_('It must be a number'))
         return
     await state.update_data({'age': int(message.text)})
     await CalculateState.next()
 
-    await message.answer('Input your growth(rounded)')
+    await message.answer(_('Input your growth(rounded)'))
 
 
 async def calculate_state_growth(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number')
+        await message.answer(_('It must be a number'))
         return
     await state.update_data({'growth': int(message.text)})
     await CalculateState.next()
 
-    await message.answer('Input your weight(rounded)')
+    await message.answer(_('Input your weight(rounded)'))
 
 
 async def calculate_state_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number')
+        await message.answer(_('It must be a number'))
         return
     await state.update_data({'weight': int(message.text)})
     await CalculateState.next()
 
     await message.answer(
-        (
+        _(
             'Choose your activity coefficient:\n\n'
             '1. Minimum physical activity\n'
             '2. Workout 3 times per week\n'
@@ -376,14 +364,14 @@ async def calculate_state_activity(
     await state.set_data({'result': result, 'limits': result_limits})
 
     await callback_query.message.answer(
-        (
-            f'Your calorie limit: {result} kcal\n'
-            f'Your protein limit: {result_limits[0]} g\n'
-            f'Your fat limit: {result_limits[1]} g\n'
-            f'Your carb limit: {result_limits[2]} g\n'
+        _(
+            'Your calorie limit: {result} kcal\n'
+            'Your protein limit: {result_limits[0]} g\n'
+            'Your fat limit: {result_limits[1]} g\n'
+            'Your carb limit: {result_limits[2]} g\n'
             'Write this number to your calorie limit?'
-        ),
-        reply_markup=CALCULATE_FINISH_INLINE_KEYBOARD,
+        ).format(result=result, result_limits=result_limits),
+        reply_markup=get_calculate_finish_inline_keyboard(),
     )
     await CalculateState.next()
 
@@ -424,7 +412,7 @@ async def calculate_state_cancel(message: types.Message, state: FSMContext):
 # Record state
 async def command_record(message: types.Message):
     await RecordState.weight.set()
-    await message.answer('Input the weight of eaten')
+    await message.answer(_('Input the weight of eaten'))
 
 
 async def callback_record(callback_query: types.CallbackQuery):
@@ -434,42 +422,42 @@ async def callback_record(callback_query: types.CallbackQuery):
 
 async def record_state_weight(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number(gram)')
+        await message.answer(_('It must be a number(gram)'))
         return
     answer = int(message.text)
     await state.update_data({'mass': answer / 100})
     await RecordState.next()
 
-    await message.answer('Input the weight of protein per 100 grams')
+    await message.answer(_('Input the weight of protein per 100 grams'))
 
 
 async def record_state_protein(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number(gram)')
+        await message.answer(_('It must be a number(gram)'))
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
     await state.update_data({'protein': answer * mass})
     await RecordState.next()
 
-    await message.answer('Input the weight of fat per 100 grams')
+    await message.answer(_('Input the weight of fat per 100 grams'))
 
 
 async def record_state_fat(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number(gram)')
+        await message.answer(_('It must be a number(gram)'))
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
     await state.update_data({'fat': answer * mass})
     await RecordState.next()
 
-    await message.answer('Input the weight of fat per 100 grams')
+    await message.answer(_('Input the weight of fat per 100 grams'))
 
 
 async def record_state_carb(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer('It must be a number(gram)')
+        await message.answer(_('It must be a number(gram)'))
         return
     answer = int(message.text)
     mass = (await state.get_data())['mass']
@@ -484,7 +472,7 @@ async def record_state_carb(message: types.Message, state: FSMContext):
     )
     await state.finish()
 
-    await message.answer('Recorded')
+    await message.answer(_('Recorded'))
     await command_statistics(message)
 
 
@@ -527,9 +515,6 @@ def register_user_handlers(dp: Dispatcher) -> None:
 
     # STATES
     # Settings state
-    dp.register_callback_query_handler(
-        settings_state_language, state=SettingsState.language
-    )
     dp.register_callback_query_handler(
         settings_state_time_zone_page,
         filters.Text(startswith='zonepage_'),

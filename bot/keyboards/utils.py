@@ -13,35 +13,3 @@ def get_prev_day(__date_string: str) -> str:
 
 def get_next_day(__date_string: str) -> str:
     return (date.fromisoformat(__date_string) + timedelta(days=1)).isoformat()
-
-
-TIME_ZONES = [
-    '-12',
-    '-11',
-    '-10',
-    '-9',
-    '-8',
-    '-7',
-    '-6',
-    '-5',
-    '-4',
-    '-3',
-    '-2',
-    '-1',
-    '+0',
-    '+1',
-    '+2',
-    '+3',
-    '+4',
-    '+5',
-    '+6',
-    '+7',
-    '+8',
-    '+9',
-    '+10',
-    '+11',
-    '+12',
-    '+13',
-    '+14',
-]
-TIME_ZONE_START_PAGE = 1
