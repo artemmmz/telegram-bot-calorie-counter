@@ -20,7 +20,7 @@ from keyboards import (
     get_statistics_keyboard,
     get_records_keyboard,
 )
-from utils.consts import RECORDS_PAGE_NUM
+from utils.consts import RECORDS_PAGE_NUM, MASS_UNITS
 from utils.utils import kcal_limit, limits
 from utils.texts import gettext
 from utils.states import CalculateState, RecordState, SettingsState
@@ -79,6 +79,8 @@ async def command_statistics(
     user = get_user(user_id, date_string)
     date_string = user['date_str']
 
+    unit = _(user['settings']['mass'])
+
     text = _(
         'Your statistics:\n\n'
         'Protein: {s[protein]}/{l[protein]} {u}\n'
@@ -86,7 +88,7 @@ async def command_statistics(
         'Carb: {s[carb]}/{l[carb]} {u}\n'
         'Calories: {s[calories]}/{l[calories]} kcal\n'
     ).format(
-        u=user['settings']['mass'],
+        u=unit,
         s=user['statistics'],
         l=user['limits'],
     )
@@ -111,6 +113,8 @@ async def command_records(
     if page is None:
         page = 0
     user = get_user(user_id, date_string)
+    unit = _(user['settings']['mass'])
+
     date_string = user['date_str']
     records_date = user['records_date']
     records_date_page = records_date[
@@ -123,7 +127,7 @@ async def command_records(
             '\tFat: {r[fat]} {unit}\n'
             '\tCarb: {r[carb]} {unit}\n'
             '\tCalories: {r[calories]} kcal\n'
-        ).format(r=record, unit=user['settings']['mass'])
+        ).format(r=record, unit=unit)
         for record in records_date_page
     ]
 
@@ -149,6 +153,7 @@ async def command_settings(
 ):
     user_id = message.from_user.id
     user = db_users.get_records({'user_id': user_id}, limit=1)
+    user['settings']['mass'] = MASS_UNITS[user['settings']['mass']]
 
     text = _(
         'SETTINGS\n\n'
@@ -382,6 +387,7 @@ async def calculate_state_waiting_for_finish(
     ind = int(callback_query.data[len('calculate_finish_'):])  # fmt: skip
     if ind == 2:
         # TODO: write a change limits after calculate
+        await callback_query.answer('Soon', show_alert=True)
         return
     await callback_query.message.delete()
     answer = bool(ind)

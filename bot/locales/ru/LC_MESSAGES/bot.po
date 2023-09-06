@@ -37,10 +37,17 @@ msgid ""
 "\t- Settings(/settings) - settings mass unit, timezone, language and etc."
 "\n"
 msgstr ""
+"<b>МЕНЮ</b>\n"
+"\n"
+"\t- Записать(/record) - записать калории по белкам, жирам и углеводам\n"
+"\t- Статистика(/stat) - ваша статистика калорий, белков, жиров и углеводов\n"
+"\t- Записи(/records) - список ваших записей\n"
+"\t- Настройки(/settings) - настройки единицы измерения, часового пояса и т.д."
+"\n"
 
 #: ../bot/handlers/user/main.py:68
 msgid "Your profile\n"
-msgstr ""
+msgstr "Профиль"
 
 #: ../bot/handlers/user/main.py:82
 msgid ""
@@ -51,6 +58,12 @@ msgid ""
 "Carb: {s[carb]}/{l[carb]} {u}\n"
 "Calories: {s[calories]}/{l[calories]} kcal\n"
 msgstr ""
+"Статистика:\n"
+"\n"
+"Белки: {s[protein]}/{l[protein]} {u}\n"
+"Жиры: {s[fat]}/{l[fat]} {u}\n"
+"Углеводы: {s[carb]}/{l[carb]} {u}\n"
+"Калории: {s[calories]}/{l[calories]} кКал\n"
 
 #: ../bot/handlers/user/main.py:120
 msgid ""
@@ -60,6 +73,11 @@ msgid ""
 "\tCarb: {r[carb]} {unit}\n"
 "\tCalories: {r[calories]} kcal\n"
 msgstr ""
+"\tВремя: {r[time_str]}\n"
+"\tБелки: {r[protein]} {unit}\n"
+"\tЖиры: {r[fat]} {unit}\n"
+"\tУглеводы: {r[carb]} {unit}\n"
+"\tКалории: {r[calories]} kcal\n"
 
 #: ../bot/handlers/user/main.py:131
 msgid ""
@@ -67,6 +85,9 @@ msgid ""
 "\n"
 "{rt}"
 msgstr ""
+"Список записей\n"
+"\n"
+"{rt}"
 
 #: ../bot/handlers/user/main.py:153
 msgid ""
@@ -77,20 +98,28 @@ msgid ""
 "\n"
 "What change?"
 msgstr ""
+"НАСТРОЙКИ\n"
+"\n"
+"Единица измерения массы: {s[mass]}\n"
+"Часовой пояс: UTC{s[utc]}\n"
+"\n"
+"Что изменить?"
 
 #: ../bot/handlers/user/main.py:210
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: ../bot/handlers/user/main.py:244
 msgid "Select your time zome"
-msgstr ""
+msgstr "Выберите часовой пояс"
 
 #: ../bot/handlers/user/main.py:269
 msgid ""
 "Your choices saved\n"
 "Calculate your limits?"
 msgstr ""
+"Выбор сохранён\n"
+"Расчитать лимиты потребления?"
 
 #: ../bot/handlers/user/main.py:278
 msgid ""
@@ -100,27 +129,32 @@ msgid ""
 "2. Control of the diet\n"
 "3. For the weigth loss\n"
 msgstr ""
+"Выберите, что Вы хотите:\n"
+"\n"
+"1. Набрать вес\n"
+"2. Контролировать диету\n"
+"3. Сбросить вес\n"
 
 #: ../bot/handlers/user/main.py:297
 msgid "Choose your gender"
-msgstr ""
+msgstr "Выберите пол"
 
 #: ../bot/handlers/user/main.py:309
 msgid "Input your age"
-msgstr ""
+msgstr "Введите возраст"
 
 #: ../bot/handlers/user/main.py:314 ../bot/handlers/user/main.py:324
 #: ../bot/handlers/user/main.py:334
 msgid "It must be a number"
-msgstr ""
+msgstr "Это должно быть число"
 
 #: ../bot/handlers/user/main.py:319
 msgid "Input your growth(rounded)"
-msgstr ""
+msgstr "Введите рост(округлённый)"
 
 #: ../bot/handlers/user/main.py:329
 msgid "Input your weight(rounded)"
-msgstr ""
+msgstr "Введите вес(округлённый)"
 
 #: ../bot/handlers/user/main.py:340
 msgid ""
@@ -134,6 +168,15 @@ msgid ""
 "6. Intensive workout every day or 2 times per day\n"
 "7. Physical activity every day + physical work\n"
 msgstr ""
+"Выберите коэффициент активности:\n"
+"\n"
+"1. Минимум физической активности\n"
+"2. Тренировки 3 раза в неделю\n"
+"3. Тренировки 5 раз в неделю\n"
+"4. Интенсивные тренировки 5 раз в неделю\n"
+"5. Тренировки каждый день\n"
+"6. Интенсивные тренировки каждый день или 2 раза в день\n"
+"7. Физическая активность каждый день + физическая работа\n"
 
 #: ../bot/handlers/user/main.py:367
 msgid ""
@@ -143,27 +186,32 @@ msgid ""
 "Your carb limit: {result_limits[2]} g\n"
 "Write this number to your calorie limit?"
 msgstr ""
+"Лимит потребления калорий: {result} кКал\n"
+"Лимит потребления белков: {result_limits[0]} g\n"
+"Лимит потребления жиров: {result_limits[1]} g\n"
+"Лимит потребления углеводов: {result_limits[2]} g\n"
+"Записать в лимит потребления?"
 
 #: ../bot/handlers/user/main.py:415
 msgid "Input the weight of eaten"
-msgstr ""
+msgstr "Введите вес съеденного"
 
 #: ../bot/handlers/user/main.py:425 ../bot/handlers/user/main.py:436
 #: ../bot/handlers/user/main.py:448 ../bot/handlers/user/main.py:460
 msgid "It must be a number(gram)"
-msgstr ""
+msgstr "Это должно быть число(в граммах)"
 
 #: ../bot/handlers/user/main.py:431
 msgid "Input the weight of protein per 100 grams"
-msgstr ""
+msgstr "Введите вес белков на 100 грамм съеденного"
 
 #: ../bot/handlers/user/main.py:443 ../bot/handlers/user/main.py:455
 msgid "Input the weight of fat per 100 grams"
-msgstr ""
+msgstr "Введите вес жиров на 100 грамм съеденного"
 
 #: ../bot/handlers/user/main.py:475
 msgid "Recorded"
-msgstr ""
+msgstr "Записано"
 
 #: ../bot/utils/texts.py:12
 msgid "yes"
