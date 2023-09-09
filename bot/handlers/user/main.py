@@ -509,7 +509,9 @@ def register_user_handlers(dp: Dispatcher) -> None:
         callback_settings_unit_edit, filters.Text(startswith='settings_unit_')
     )
     dp.register_callback_query_handler(
-        settings_timezone_page, filters.Text(startswith='settings_zone_page_')
+        settings_timezone_page,
+        filters.Text(startswith='settings_zone_page_'),
+        state='*',
     )
     dp.register_callback_query_handler(
         callback_settings_timezone_edit,
