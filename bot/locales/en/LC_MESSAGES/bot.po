@@ -1,0 +1,294 @@
+# English translations for bot.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the bot project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bot VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-09-09 17:43+0300\n"
+"PO-Revision-Date: 2023-09-05 18:50+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: handlers/user/main.py:68 handlers/user/main.py:96
+msgid "settingsunit"
+msgstr ""
+
+#: utils/texts.py:11
+msgid "yes"
+msgstr ""
+
+#: utils/texts.py:12
+msgid "no"
+msgstr ""
+
+#: utils/texts.py:14
+msgid "menu"
+msgstr ""
+
+#: utils/texts.py:15
+msgid "calculate"
+msgstr ""
+
+#: utils/texts.py:16
+msgid "record"
+msgstr ""
+
+#: utils/texts.py:17
+msgid "statistics"
+msgstr ""
+
+#: utils/texts.py:18
+msgid "records"
+msgstr ""
+
+#: utils/texts.py:19
+msgid "settings"
+msgstr ""
+
+#: utils/texts.py:21
+msgid "page"
+msgstr ""
+
+#: utils/texts.py:23
+msgid "male"
+msgstr ""
+
+#: utils/texts.py:24
+msgid "female"
+msgstr ""
+
+#: utils/texts.py:26
+msgid "change value"
+msgstr ""
+
+#: utils/texts.py:28
+msgid "mass unit"
+msgstr ""
+
+#: utils/texts.py:29
+msgid "timezone"
+msgstr ""
+
+#: utils/texts.py:31
+msgid "g"
+msgstr ""
+
+#: utils/texts.py:32
+msgid "gram"
+msgstr ""
+
+#: utils/texts.py:34
+msgid "oz"
+msgstr ""
+
+#: utils/texts.py:35
+msgid "ounce"
+msgstr ""
+
+#: utils/texts.py:37
+msgid "empty"
+msgstr ""
+
+#: utils/texts.py:38
+msgid "error"
+msgstr ""
+
+#: utils/texts.py:39
+msgid "recorded"
+msgstr ""
+
+#: utils/texts.py:43
+msgid ""
+"Hello!\n"
+"{t}"
+msgstr ""
+
+#: utils/texts.py:44
+msgid ""
+"<b>MENU</b>\n"
+"\n"
+"\t- Record(/record) - record your calories by proteins, fats and carbs\n"
+"\t- Statistics(/stat) - your calorie, protein, fat and carb statistics\n"
+"\t- Records(/records) - list of your records\n"
+"\t- Calculate(/calculate) - calculate your calorie, protein, fat and carb"
+" limits\n"
+"\t- Settings(/settings) - settings mass unit, timezone, language and etc."
+"\n"
+msgstr ""
+
+#: utils/texts.py:57
+msgid ""
+"Your statistics:\n"
+"\n"
+"Protein: {s[protein]}/{l[protein]} {u}\n"
+"Fat: {s[fat]}/{l[fat]} {u}\n"
+"Carb: {s[carb]}/{l[carb]} {u}\n"
+"Calories: {s[calories]}/{l[calories]} kcal\n"
+msgstr ""
+
+#: utils/texts.py:64
+msgid ""
+"\tTime: {r[time_str]}\n"
+"\tProtein: {r[protein]} {unit}\n"
+"\tFat: {r[fat]} {unit}\n"
+"\tCarb: {r[carb]} {unit}\n"
+"\tCalories: {r[calories]} kcal\n"
+msgstr ""
+
+#: utils/texts.py:71
+msgid ""
+"List of records\n"
+"\n"
+"{rt}"
+msgstr ""
+
+#: utils/texts.py:72
+msgid ""
+"SETTINGS\n"
+"\n"
+"Mass unit: {s[unit]}\n"
+"Timezone: UTC{s[timezone]}\n"
+"\n"
+"What change?"
+msgstr ""
+
+#: utils/texts.py:78
+msgid "Select your mass unit"
+msgstr ""
+
+#: utils/texts.py:79
+msgid "Select your time zone"
+msgstr ""
+
+#: utils/texts.py:80
+msgid ""
+"Your choices saved\n"
+"Calculate your limits?"
+msgstr ""
+
+#: utils/texts.py:81
+msgid ""
+"Choose what do you want:\n"
+"\n"
+"1. Weight gain\n"
+"2. Control of the diet\n"
+"3. For the weigth loss\n"
+msgstr ""
+
+#: utils/texts.py:87
+msgid "Choose your gender"
+msgstr ""
+
+#: utils/texts.py:88
+msgid "It must be a number"
+msgstr ""
+
+#: utils/texts.py:89
+msgid "Input your age"
+msgstr ""
+
+#: utils/texts.py:90
+msgid "Input your growth(rounded)"
+msgstr ""
+
+#: utils/texts.py:91
+msgid "Input your weight(rounded)"
+msgstr ""
+
+#: utils/texts.py:92
+msgid ""
+"Choose your activity coefficient:\n"
+"\n"
+"1. Minimum physical activity\n"
+"2. Workout 3 times per week\n"
+"3. Workout 5 times per week\n"
+"4. Intensive workout 5 times per week\n"
+"5. Workout every day\n"
+"6. Intensive workout every day or 2 times per day\n"
+"7. Physical activity every day + physical work\n"
+msgstr ""
+
+#: utils/texts.py:102
+msgid ""
+"Your calorie limit: {result} kcal\n"
+"Your protein limit: {result_limits[0]} g\n"
+"Your fat limit: {result_limits[1]} g\n"
+"Your carb limit: {result_limits[2]} g\n"
+"Write this number to your calorie limit?"
+msgstr ""
+
+#: utils/texts.py:109
+msgid "Input the weight of eaten"
+msgstr ""
+
+#: utils/texts.py:110
+msgid "Input the weight of protein per 100 grams"
+msgstr ""
+
+#: utils/texts.py:111
+msgid "Input the weight of fat per 100 grams"
+msgstr ""
+
+#: utils/texts.py:112
+msgid "Input the weight of carb per 100 grams"
+msgstr ""
+
+#~ msgid ""
+#~ "<b>MENU</b>\n"
+#~ "\n"
+#~ "\t- Record(/record) - record your "
+#~ "calories by proteins, fats and carbs"
+#~ "\n"
+#~ "\t- Statistics(/stat) - your calorie,"
+#~ " protein, fat and carb statistics\n"
+#~ "\t- Records(/records) - list of your records\n"
+#~ "\t- Settings(/settings) - settings mass"
+#~ " unit, timezone, language and etc.\n"
+#~ msgstr ""
+
+#~ msgid "Your profile\n"
+#~ msgstr ""
+
+#~ msgid "settingsmass"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "SETTINGS\n"
+#~ "\n"
+#~ "Mass unit: {s[mass]}\n"
+#~ "Timezone: UTC{s[utc]}\n"
+#~ "\n"
+#~ "What change?"
+#~ msgstr ""
+
+#~ msgid "Select your time zome"
+#~ msgstr ""
+
+#~ msgid "Error"
+#~ msgstr ""
+
+#~ msgid "It must be a number(gram)"
+#~ msgstr ""
+
+#~ msgid "Recorded"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Hello!\n"
+#~ "Select your mass unit"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Hello\n"
+#~ "{t}"
+#~ msgstr ""
+

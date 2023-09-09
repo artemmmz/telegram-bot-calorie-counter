@@ -12,7 +12,7 @@ idna==3.4
 magic-filter==1.0.11
 mongoengine==0.27.0
 multidict==6.0.4
-pymongo==4.4.1
+pymongo==4.5.0
 python-dotenv==1.0.0
 pytz==2023.3
 yarl==1.9.2

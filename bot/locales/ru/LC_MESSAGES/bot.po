@@ -1,0 +1,299 @@
+# Russian translations for bot.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the bot project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bot VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-09-09 17:43+0300\n"
+"PO-Revision-Date: 2023-09-05 18:50+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: handlers/user/main.py:68 handlers/user/main.py:96
+#, fuzzy
+msgid "settingsunit"
+msgstr "настройки"
+
+#: utils/texts.py:11
+msgid "yes"
+msgstr "да"
+
+#: utils/texts.py:12
+msgid "no"
+msgstr "нет"
+
+#: utils/texts.py:14
+msgid "menu"
+msgstr "меню"
+
+#: utils/texts.py:15
+msgid "calculate"
+msgstr "рассчитать"
+
+#: utils/texts.py:16
+msgid "record"
+msgstr "записать"
+
+#: utils/texts.py:17
+msgid "statistics"
+msgstr "статистика"
+
+#: utils/texts.py:18
+msgid "records"
+msgstr "записи"
+
+#: utils/texts.py:19
+msgid "settings"
+msgstr "настройки"
+
+#: utils/texts.py:21
+msgid "page"
+msgstr "страница"
+
+#: utils/texts.py:23
+msgid "male"
+msgstr "мужчина"
+
+#: utils/texts.py:24
+msgid "female"
+msgstr "женщина"
+
+#: utils/texts.py:26
+msgid "change value"
+msgstr "изменить значение"
+
+#: utils/texts.py:28
+msgid "mass unit"
+msgstr "единица измерения"
+
+#: utils/texts.py:29
+msgid "timezone"
+msgstr "часовой пояс"
+
+#: utils/texts.py:31
+msgid "g"
+msgstr "г"
+
+#: utils/texts.py:32
+msgid "gram"
+msgstr "грамм"
+
+#: utils/texts.py:34
+msgid "oz"
+msgstr "у"
+
+#: utils/texts.py:35
+msgid "ounce"
+msgstr "унция"
+
+#: utils/texts.py:37
+msgid "empty"
+msgstr "пусто"
+
+#: utils/texts.py:38
+msgid "error"
+msgstr "ошибка"
+
+#: utils/texts.py:39
+msgid "recorded"
+msgstr "записано"
+
+#: utils/texts.py:43
+msgid ""
+"Hello!\n"
+"{t}"
+msgstr ""
+"Привет!\n"
+"{t}"
+
+#: utils/texts.py:44
+msgid ""
+"<b>MENU</b>\n"
+"\n"
+"\t- Record(/record) - record your calories by proteins, fats and carbs\n"
+"\t- Statistics(/stat) - your calorie, protein, fat and carb statistics\n"
+"\t- Records(/records) - list of your records\n"
+"\t- Calculate(/calculate) - calculate your calorie, protein, fat and carb"
+" limits\n"
+"\t- Settings(/settings) - settings mass unit, timezone, language and etc."
+"\n"
+msgstr ""
+"<b>МЕНЮ</b>\n"
+"\n"
+"\t- Записать(/record) - записать калории по белкам, жирам и углеводам\n"
+"\t- Статистика(/stat) - ваша статистика калорий, белков, жиров и "
+"углеводов\n"
+"\t- Рассчитать(/calculate) - расчитать лимит калорий, белков, жиров и "
+"углеводов\n"
+"\t- Записи(/records) - список ваших записей\n"
+"\t- Настройки(/settings) - настройки единицы измерения, часового пояса и "
+"т.д.\n"
+
+#: utils/texts.py:57
+msgid ""
+"Your statistics:\n"
+"\n"
+"Protein: {s[protein]}/{l[protein]} {u}\n"
+"Fat: {s[fat]}/{l[fat]} {u}\n"
+"Carb: {s[carb]}/{l[carb]} {u}\n"
+"Calories: {s[calories]}/{l[calories]} kcal\n"
+msgstr ""
+"Статистика:\n"
+"\n"
+"Белки: {s[protein]}/{l[protein]} {u}\n"
+"Жиры: {s[fat]}/{l[fat]} {u}\n"
+"Углеводы: {s[carb]}/{l[carb]} {u}\n"
+"Калории: {s[calories]}/{l[calories]} кКал\n"
+
+#: utils/texts.py:64
+msgid ""
+"\tTime: {r[time_str]}\n"
+"\tProtein: {r[protein]} {unit}\n"
+"\tFat: {r[fat]} {unit}\n"
+"\tCarb: {r[carb]} {unit}\n"
+"\tCalories: {r[calories]} kcal\n"
+msgstr ""
+"\tВремя: {r[time_str]}\n"
+"\tБелки: {r[protein]} {unit}\n"
+"\tЖиры: {r[fat]} {unit}\n"
+"\tУглеводы: {r[carb]} {unit}\n"
+"\tКалории: {r[calories]} кКал\n"
+
+#: utils/texts.py:71
+msgid ""
+"List of records\n"
+"\n"
+"{rt}"
+msgstr ""
+"Список записей\n"
+"\n"
+"{rt}"
+
+#: utils/texts.py:72
+msgid ""
+"SETTINGS\n"
+"\n"
+"Mass unit: {s[unit]}\n"
+"Timezone: UTC{s[timezone]}\n"
+"\n"
+"What change?"
+msgstr ""
+"НАСТРОЙКИ\n"
+"\n"
+"Единица измерения массы: {s[unit]}\n"
+"Часовой пояс: UTC{s[timezone]}\n"
+"\n"
+"Что изменить?"
+
+#: utils/texts.py:78
+msgid "Select your mass unit"
+msgstr "Выберите свою единицу измерения массы"
+
+#: utils/texts.py:79
+msgid "Select your time zone"
+msgstr "Выберите часовой пояс"
+
+#: utils/texts.py:80
+msgid ""
+"Your choices saved\n"
+"Calculate your limits?"
+msgstr ""
+"Выбор сохранён\n"
+"Расчитать лимиты потребления?"
+
+#: utils/texts.py:81
+msgid ""
+"Choose what do you want:\n"
+"\n"
+"1. Weight gain\n"
+"2. Control of the diet\n"
+"3. For the weigth loss\n"
+msgstr ""
+"Выберите, что Вы хотите:\n"
+"\n"
+"1. Набрать вес\n"
+"2. Контролировать диету\n"
+"3. Сбросить вес\n"
+
+#: utils/texts.py:87
+msgid "Choose your gender"
+msgstr "Выберите пол"
+
+#: utils/texts.py:88
+msgid "It must be a number"
+msgstr "Это должно быть число"
+
+#: utils/texts.py:89
+msgid "Input your age"
+msgstr "Введите возраст"
+
+#: utils/texts.py:90
+msgid "Input your growth(rounded)"
+msgstr "Введите рост(округлённый)"
+
+#: utils/texts.py:91
+msgid "Input your weight(rounded)"
+msgstr "Введите вес(округлённый)"
+
+#: utils/texts.py:92
+msgid ""
+"Choose your activity coefficient:\n"
+"\n"
+"1. Minimum physical activity\n"
+"2. Workout 3 times per week\n"
+"3. Workout 5 times per week\n"
+"4. Intensive workout 5 times per week\n"
+"5. Workout every day\n"
+"6. Intensive workout every day or 2 times per day\n"
+"7. Physical activity every day + physical work\n"
+msgstr ""
+"Выберите коэффициент активности:\n"
+"\n"
+"1. Минимум физической активности\n"
+"2. Тренировки 3 раза в неделю\n"
+"3. Тренировки 5 раз в неделю\n"
+"4. Интенсивные тренировки 5 раз в неделю\n"
+"5. Тренировки каждый день\n"
+"6. Интенсивные тренировки каждый день или 2 раза в день\n"
+"7. Физическая активность каждый день + физическая работа\n"
+
+#: utils/texts.py:102
+msgid ""
+"Your calorie limit: {result} kcal\n"
+"Your protein limit: {result_limits[0]} g\n"
+"Your fat limit: {result_limits[1]} g\n"
+"Your carb limit: {result_limits[2]} g\n"
+"Write this number to your calorie limit?"
+msgstr ""
+"Лимит потребления калорий: {result} кКал\n"
+"Лимит потребления белков: {result_limits[0]} g\n"
+"Лимит потребления жиров: {result_limits[1]} g\n"
+"Лимит потребления углеводов: {result_limits[2]} g\n"
+"Записать в лимит потребления?"
+
+#: utils/texts.py:109
+msgid "Input the weight of eaten"
+msgstr "Введите вес съеденного"
+
+#: utils/texts.py:110
+msgid "Input the weight of protein per 100 grams"
+msgstr "Введите вес белков на 100 грамм съеденного"
+
+#: utils/texts.py:111
+msgid "Input the weight of fat per 100 grams"
+msgstr "Введите вес жиров на 100 грамм съеденного"
+
+#: utils/texts.py:112
+msgid "Input the weight of carb per 100 grams"
+msgstr "Введите вес углеводов на 100 грамм съеденного"
+
