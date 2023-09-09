@@ -24,17 +24,21 @@ class Database(object):
 
     def get_records(
         self,
-        data: dict = {},
         *args,
         limit: int = -1,
         **kwargs,
     ):
         if limit == 1:
-            return self.collection.find_one(data, *args, **kwargs)
+            return self.collection.find_one(*args, **kwargs)
         if limit > 1:
-            return list(self.collection.find(data, *args, **kwargs))[:limit]
+            return list(self.collection.find(*args, **kwargs))[:limit]
         if limit == -1:
-            return list(self.collection.find(data, *args, **kwargs))
+            return list(self.collection.find(*args, **kwargs))
 
-    def update_elem(self, filter: dict, data: dict, type_: str = 'set'):
+    def get_record(self, *args, **kwargs):
+        return self.get_records(*args, **kwargs, limit=1)
+
+    def update_elem(self, filter: dict, data: dict, type_: str | None = None):
+        if type_ is None:
+            type_ = 'set'
         self.collection.update_one(filter, {f'${type_}': data})

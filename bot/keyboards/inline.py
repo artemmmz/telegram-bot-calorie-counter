@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from utils.consts import TIME_ZONES, MASS_UNITS, TIME_ZONE_START_PAGE
-from utils.texts import Text
+from utils.texts import Word
 from .utils import (
     get_prev_day,
     get_next_day,
@@ -13,8 +13,10 @@ def get_yesno_keyboard(row_width=2, prefix=None) -> InlineKeyboardMarkup:
         prefix = f'{prefix}_'
     keyboard = InlineKeyboardMarkup(row_width)
     keyboard.add(
-        InlineKeyboardButton(Text.YES_CAP, callback_data=f'{prefix}1'),
-        InlineKeyboardButton(Text.NO_CAP, callback_data=f'{prefix}0'),
+        InlineKeyboardButton(
+            Word.YES.capitalize(), callback_data=f'{prefix}1'
+        ),
+        InlineKeyboardButton(Word.NO.capitalize(), callback_data=f'{prefix}0'),
     )
     return keyboard
 
@@ -52,11 +54,15 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     control_row = []
     if page > 0:
         control_row.append(
-            InlineKeyboardButton('<<', callback_data=f'zonepage_{page - 1}')
+            InlineKeyboardButton(
+                '<<', callback_data=f'settings_zone_page_{page - 1}'
+            )
         )
     if page < len(TIME_ZONES) / (rows * cols) - 1:
         control_row.append(
-            InlineKeyboardButton('>>', callback_data=f'zonepage_{page + 1}')
+            InlineKeyboardButton(
+                '>>', callback_data=f'settings_zone_page_{page + 1}'
+            )
         )
     keyboard.row(*control_row)
     return keyboard
@@ -75,7 +81,7 @@ def get_statistics_keyboard(date: str, today_date: str):
     )
     keyboard.add(
         InlineKeyboardButton(
-            f'<<< {Text.MENU.upper()}', callback_data='to_menu'
+            f'<<< {Word.MENU.upper()}', callback_data='to_menu'
         ),
     )
     return keyboard
@@ -89,7 +95,7 @@ def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
                 '<<', callback_data=f'records_{date}_p{max(0, page - 1)}'
             ),
             InlineKeyboardButton(
-                f'{Text.PAGE_CAP} {page + 1}/{pages}',
+                f'{Word.PAGE.capitalize()} {page + 1}/{pages}',
                 callback_data=f'records_{date}_p0',
             ),
             InlineKeyboardButton(
@@ -109,7 +115,9 @@ def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
         ),
     )
     keyboard.add(
-        InlineKeyboardButton(f'<<< {Text.MENU_UP}', callback_data='to_menu'),
+        InlineKeyboardButton(
+            f'<<< {Word.MENU.upper()}', callback_data='to_menu'
+        ),
     )
     return keyboard
 
@@ -118,7 +126,7 @@ def get_start_inline_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
         InlineKeyboardButton(
-            Text.CALCULATE_CAP, callback_data='calculate_calorie'
+            Word.CALCULATE.capitalize(), callback_data='calculate_calorie'
         )
     )
     return keyboard
@@ -127,10 +135,19 @@ def get_start_inline_keyboard():
 def get_menu_inline_keyboard():
     keyboard = InlineKeyboardMarkup(1)
     keyboard.add(
-        InlineKeyboardButton(Text.RECORD_CAP, callback_data='record'),
-        InlineKeyboardButton(Text.STATISTICS_CAP, callback_data='statistics'),
-        InlineKeyboardButton(Text.RECORDS_CAP, callback_data='records'),
-        InlineKeyboardButton(Text.SETTINGS_CAP, callback_data='settings'),
+        InlineKeyboardButton(Word.RECORD.capitalize(), callback_data='record'),
+        InlineKeyboardButton(
+            Word.STATISTICS.capitalize(), callback_data='statistics'
+        ),
+        InlineKeyboardButton(
+            Word.RECORDS.capitalize(), callback_data='records'
+        ),
+        InlineKeyboardButton(
+            Word.CALCULATE.capitalize(), callback_data='calculate'
+        ),
+        InlineKeyboardButton(
+            Word.SETTINGS.capitalize(), callback_data='settings'
+        ),
     )
     return keyboard
 
@@ -140,9 +157,9 @@ def get_unit_inline_keyboard():
     keyboard.add(
         *[
             InlineKeyboardButton(
-                text.capitalize(), callback_data=f'settings_unit_{unit}'
+                word[1].capitalize(), callback_data=f'settings_unit_{unit}'
             )
-            for unit, text in MASS_UNITS.items()
+            for unit, word in MASS_UNITS.items()
         ]
     )
     return keyboard
@@ -151,8 +168,10 @@ def get_unit_inline_keyboard():
 def get_settings_end_inline_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(
-        InlineKeyboardButton(Text.YES_CAP, callback_data='calculate_calorie'),
-        InlineKeyboardButton(Text.NO_CAP, callback_data='to_menu'),
+        InlineKeyboardButton(
+            Word.YES.capitalize(), callback_data='calculate_calorie'
+        ),
+        InlineKeyboardButton(Word.NO.capitalize(), callback_data='to_menu'),
     )
     return keyboard
 
@@ -160,8 +179,10 @@ def get_settings_end_inline_keyboard():
 def get_gender_inline_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.row(
-        InlineKeyboardButton(Text.MALE_CAP, callback_data='gender_0'),
-        InlineKeyboardButton(Text.FEMALE_CAP, callback_data='gender_1'),
+        InlineKeyboardButton(Word.MALE.capitalize(), callback_data='gender_0'),
+        InlineKeyboardButton(
+            Word.FEMALE.capitalize(), callback_data='gender_1'
+        ),
     )
     return keyboard
 
@@ -170,7 +191,7 @@ def get_calculate_finish_inline_keyboard():
     keyboard = get_yesno_keyboard(prefix='calculate_finish')
     keyboard.add(
         InlineKeyboardButton(
-            Text.CHANGE_VALUE_CAP, callback_data='calculate_finish_2'
+            Word.CHANGE_VALUE.capitalize(), callback_data='calculate_finish_2'
         )
     )
     return keyboard
@@ -180,11 +201,15 @@ def get_settings_inline_keyboard():
     keyboard = InlineKeyboardMarkup(3)
     keyboard.row(
         InlineKeyboardButton(
-            Text.MASS_UNIT_CAP, callback_data='settings_unit'
+            Word.MASS_UNIT.capitalize(), callback_data='settings_unit'
         ),
-        InlineKeyboardButton(Text.TIMEZONE_CAP, callback_data='settings_zone'),
+        InlineKeyboardButton(
+            Word.TIMEZONE.capitalize(), callback_data='settings_zone'
+        ),
     )
     keyboard.row(
-        InlineKeyboardButton(f'<<< {Text.MENU_UP}', callback_data='to_menu')
+        InlineKeyboardButton(
+            f'<<< {Word.MENU.upper()}', callback_data='to_menu'
+        )
     )
     return keyboard

@@ -1,10 +1,13 @@
-from utils.texts import Text
+from utils.texts import Word
 
 
 RECORDS_PAGE_NUM = 3
 TIME_ZONE_START_PAGE = 1
 
-MASS_UNITS = {'g': Text.GRAM, 'oz': Text.OUNCE}
+MASS_UNITS = {
+    'g': (Word.GRAM_SHORT, Word.GRAM),
+    'oz': (Word.OUNCE_SHORT, Word.OUNCE),
+}
 TIME_ZONES = [
     '-12',
     '-11',

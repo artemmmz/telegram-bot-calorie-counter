@@ -20,7 +20,7 @@ def get_user(user_id: int, __date_string: str | None = None):
                                 '$dateToString': {
                                     'date': '$records.time',
                                     'format': '%H:%M',
-                                    'timezone': '$settings.utc',
+                                    'timezone': '$settings.timezone',
                                 }
                             },
                             'calories': {
@@ -34,7 +34,7 @@ def get_user(user_id: int, __date_string: str | None = None):
                             },
                             'protein': {
                                 '$cond': {
-                                    'if': {'$eq': ['$settings.mass', 'oz']},
+                                    'if': {'$eq': ['$settings.unit', 'oz']},
                                     'then': {
                                         '$round': [
                                             {
@@ -51,7 +51,7 @@ def get_user(user_id: int, __date_string: str | None = None):
                             },
                             'fat': {
                                 '$cond': {
-                                    'if': {'$eq': ['$settings.mass', 'oz']},
+                                    'if': {'$eq': ['$settings.unit', 'oz']},
                                     'then': {
                                         '$round': [
                                             {
@@ -68,7 +68,7 @@ def get_user(user_id: int, __date_string: str | None = None):
                             },
                             'carb': {
                                 '$cond': {
-                                    'if': {'$eq': ['$settings.mass', 'oz']},
+                                    'if': {'$eq': ['$settings.unit', 'oz']},
                                     'then': {
                                         '$round': [
                                             {
@@ -103,7 +103,7 @@ def get_user(user_id: int, __date_string: str | None = None):
                     'today_date': {
                         '$dateToParts': {
                             'date': datetime.utcnow(),
-                            'timezone': '$settings.utc',
+                            'timezone': '$settings.timezone',
                         }
                     },
                 }
@@ -118,13 +118,13 @@ def get_user(user_id: int, __date_string: str | None = None):
                                     'year': '$today_date.year',
                                     'month': '$today_date.month',
                                     'day': '$today_date.day',
-                                    'timezone': '$settings.utc',
+                                    'timezone': '$settings.timezone',
                                 }
                             },
                             'else': {
                                 '$dateFromString': {
                                     'dateString': '$date_str',
-                                    'timezone': '$settings.utc',
+                                    'timezone': '$settings.timezone',
                                 }
                             },
                         }
