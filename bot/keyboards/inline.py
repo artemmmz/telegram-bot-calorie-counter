@@ -43,7 +43,7 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     keyboard.add(
         *[
             InlineKeyboardButton(
-                f'UTC{tz}', callback_data=f'settings_zone_{tz}'
+                f'UTC{tz}', callback_data=f'settings_timezone_{tz}'
             )
             for tz in TIME_ZONES[
                 rows * cols * page: rows * cols * (page + 1)  # fmt: skip
@@ -168,9 +168,7 @@ def get_unit_inline_keyboard():
 def get_settings_end_inline_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(
-        InlineKeyboardButton(
-            Word.YES.capitalize(), callback_data='calculate_calorie'
-        ),
+        InlineKeyboardButton(Word.YES.capitalize(), callback_data='calculate'),
         InlineKeyboardButton(Word.NO.capitalize(), callback_data='to_menu'),
     )
     return keyboard
@@ -188,13 +186,7 @@ def get_gender_inline_keyboard():
 
 
 def get_calculate_finish_inline_keyboard():
-    keyboard = get_yesno_keyboard(prefix='calculate_finish')
-    keyboard.add(
-        InlineKeyboardButton(
-            Word.CHANGE_VALUE.capitalize(), callback_data='calculate_finish_2'
-        )
-    )
-    return keyboard
+    return get_yesno_keyboard(prefix='calculate_finish')
 
 
 def get_settings_inline_keyboard():
@@ -204,7 +196,18 @@ def get_settings_inline_keyboard():
             Word.MASS_UNIT.capitalize(), callback_data='settings_unit'
         ),
         InlineKeyboardButton(
-            Word.TIMEZONE.capitalize(), callback_data='settings_zone'
+            Word.TIMEZONE.capitalize(), callback_data='settings_timezone'
+        ),
+    )
+    keyboard.row(
+        InlineKeyboardButton(
+            Word.PROTEIN.capitalize(), callback_data='limits_protein'
+        ),
+        InlineKeyboardButton(
+            Word.FAT.capitalize(), callback_data='limits_fat'
+        ),
+        InlineKeyboardButton(
+            Word.CARB.capitalize(), callback_data='limits_carb'
         ),
     )
     keyboard.row(

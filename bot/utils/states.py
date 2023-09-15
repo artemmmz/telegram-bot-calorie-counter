@@ -21,3 +21,7 @@ class RecordState(StatesGroup):
     protein = State()
     fat = State()
     carb = State()
+
+
+class LimitState(StatesGroup):
+    edit = State()
