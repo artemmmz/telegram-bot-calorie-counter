@@ -14,7 +14,7 @@ async def __on_startup(dp: Dispatcher):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG if DEBUG else logging.INFO)
-    bot = Bot(token=TELEGRAM_BOT_TOKEN)
+    bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode='HTML')
     dp = Dispatcher(bot, storage=MemoryStorage())
 
     dp.setup_middleware(i18n)

@@ -7,7 +7,7 @@ from aiogram.dispatcher import FSMContext
 from config import TELEGRAM_BOT_SUPERUSER_ID
 from db import Database
 from db.structures import create_user, create_record
-from db.utils import get_user
+from db.utils import get_user, get_user_unit
 from keyboards import (
     get_gender_inline_keyboard,
     get_menu_inline_keyboard,
@@ -20,10 +20,10 @@ from keyboards import (
     get_statistics_keyboard,
     get_records_keyboard,
 )
-from utils.consts import RECORDS_PAGE_NUM, MASS_UNITS
-from utils.states import CalculateState, RecordState, SettingsState
+from utils.consts import RECORDS_PAGE_NUM, MASS_UNITS, PER_MASS_TEXTS
+from utils.states import CalculateState, RecordState, SettingsState, LimitState
 from utils.texts import gettext, Text, Word
-from utils.utils import kcal_limit, limits
+from utils.utils import kcal_limit, limits, ounce_to_gram, gram_to_ounce
 
 db_users = Database('users')
 _ = gettext
@@ -123,50 +123,81 @@ async def command_records(
 
 async def command_settings(message: types.Message):
     user_id = message.from_user.id
-    user = db_users.get_records({'user_id': user_id}, limit=1)
+    user = get_user(user_id)
+    unit = MASS_UNITS[user['settings']['unit']][0]
     user['settings']['unit'] = MASS_UNITS[user['settings']['unit']][1]
 
-    text = Text.SETTINGS.format(s=user['settings'])
+    text = Text.SETTINGS.format(
+        s=user['settings'],
+        l=user['limits'],
+        u=unit,
+    )
 
     await message.answer(text, reply_markup=get_settings_inline_keyboard())
 
 
-async def command_settings_unit(message: types.Message):
-    await message.answer(Text.UNIT, reply_markup=get_unit_inline_keyboard())
+async def command_setting(message: types.Message, setting: str | None = None):
+    ANSWERS = {
+        'timezone': (Text.TIMEZONE, get_timezone_keyboard()),
+        'unit': (Text.UNIT, get_unit_inline_keyboard()),
+    }
+    await message.answer(ANSWERS[setting][0], reply_markup=ANSWERS[setting][1])
 
 
-async def command_settings_timezone(message: types.Message):
-    await message.answer(Text.TIMEZONE, reply_markup=get_timezone_keyboard())
-
-
-async def command_settings_unit_edit(
-    message: types.Message, value: str | None = None
+async def command_setting_edit(
+    message: types.Message,
+    setting: str | None = None,
+    value: str | None = None,
 ):
     db_users.update_elem(
         {'user_id': message.from_user.id},
-        {'settings.unit': value},
+        {f'settings.{setting}': value},
     )
     await command_settings(message)
 
 
-async def command_settings_timezone_edit(
-    message: types.Message, value: str | None = None
+async def command_limit(
+    message: types.Message, state: FSMContext, name: str | None = None
 ):
-    db_users.update_elem(
-        {'user_id': message.from_user.id},
-        {'settings.timezone': value},
-    )
+    await LimitState.edit.set()
+    await state.update_data({'name': name})
+    ANSWERS = {
+        'protein': Text.INPUT_LIMIT_PROTEIN,
+        'fat': Text.INPUT_LIMIT_FAT,
+        'carb': Text.INPUT_LIMIT_CARB,
+    }
+    await message.answer(ANSWERS[name])
+
+
+async def command_limit_edit(message: types.Message, state: FSMContext):
+    try:
+        answer = message.text.replace(',', '.')
+        value = float(answer)
+    except ValueError:
+        await message.answer(Text.NUMBER)
+        return
+    user_id = message.from_user.id
+    name = (await state.get_data())['name']
+    await state.finish()
+    unit = get_user_unit(user_id)
+    if unit == 'oz':
+        value = ounce_to_gram(value)
+    db_users.update_elem({'user_id': user_id}, {f'limits.{name}': value})
     await command_settings(message)
 
 
 async def command_cancel(message: types.Message, state: FSMContext):
-    await state.finish()
-    await command_menu(message)
+    if await state.get_state():
+        await state.finish()
+        await command_menu(message)
 
 
 # CALLBACKS
 async def callback_open_menu(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
     await command_menu(callback_query.message)
 
 
@@ -197,38 +228,56 @@ async def callback_records(callback_query: types.CallbackQuery):
 
 async def callback_settings(callback_query: types.CallbackQuery):
     callback_query.message.from_user = callback_query.from_user
-    await callback_query.message.delete()
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
     await command_settings(callback_query.message)
 
 
-async def callback_settings_unit(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
-    await command_settings_unit(callback_query.message)
-
-
-async def callback_settings_timezone(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
-    await command_settings_timezone(callback_query.message)
-
-
-async def callback_settings_unit_edit(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
-    value = callback_query.data[len('settings_unit_'):]  # fmt: skip
+async def callback_setting(callback_query: types.CallbackQuery):
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
     callback_query.message.from_user = callback_query.from_user
-    await command_settings_unit_edit(callback_query.message, value)
+    params = callback_query.data.split('_')
+    setting = params[1]
+    await command_setting(callback_query.message, setting)
 
 
-async def callback_settings_timezone_edit(callback_query: types.CallbackQuery):
-    await callback_query.message.delete()
-    value = callback_query.data[len('settings_zone_'):]  # fmt: skip
+async def callback_setting_edit(callback_query: types.CallbackQuery):
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
     callback_query.message.from_user = callback_query.from_user
-    await command_settings_timezone_edit(callback_query.message, value)
+    params = callback_query.data.split('_')
+    setting = params[1]
+    value = params[2]
+    await command_setting_edit(callback_query.message, setting, value)
+
+
+async def callback_limit(
+    callback_query: types.CallbackQuery, state: FSMContext
+):
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
+    callback_query.message.from_user = callback_query.from_user
+    params = callback_query.data.split('_')
+    name = params[1]
+    await command_limit(callback_query.message, state, name)
 
 
 async def callback_cancel(
     callback_query: types.CallbackQuery, state: FSMContext
 ):
-    await callback_query.message.delete()
+    try:
+        await callback_query.message.delete()
+    except exceptions.MessageCantBeDeleted:
+        ...
     await command_cancel(callback_query.message, state)
 
 
@@ -243,7 +292,7 @@ async def settings_state_unit(
     await state.update_data({'unit': answer})
     await SettingsState.next()
 
-    await command_settings_timezone(callback_query.message)
+    await command_setting(callback_query.message, 'unit')
 
 
 async def settings_timezone_page(callback_query: types.CallbackQuery):
@@ -362,9 +411,15 @@ async def calculate_state_activity(
     )
     result_limits = limits(result, data['for_what'])
     await state.set_data({'result': result, 'limits': result_limits})
+    user_unit = get_user_unit(callback_query.from_user.id)
+    unit = MASS_UNITS[user_unit][0]
 
+    if unit == 'oz':
+        result_limits = [
+            round(gram_to_ounce(value), 1) for value in result_limits
+        ]
     await callback_query.message.answer(
-        Text.LIMITS.format(result=result, result_limits=result_limits),
+        Text.LIMITS.format(result=result, result_limits=result_limits, u=unit),
         reply_markup=get_calculate_finish_inline_keyboard(),
     )
     await CalculateState.next()
@@ -374,10 +429,6 @@ async def calculate_state_waiting_for_finish(
     callback_query: types.CallbackQuery, state: FSMContext
 ) -> None:
     ind = int(callback_query.data[len('calculate_finish_'):])  # fmt: skip
-    if ind == 2:
-        # TODO: write a change limits after calculate
-        await callback_query.answer('Soon', show_alert=True)
-        return
     await callback_query.message.delete()
     answer = bool(ind)
     if answer:
@@ -393,67 +444,88 @@ async def calculate_state_waiting_for_finish(
                 }
             },
         )
-        await callback_query.message.answer('Limit saved')
-    await command_menu(callback_query.message)
+    callback_query.message.from_user = callback_query.from_user
+    await command_settings(callback_query.message)
     await state.finish()
 
 
 # Record state
-async def command_record(message: types.Message):
+async def command_record(message: types.Message, state: FSMContext):
     await RecordState.weight.set()
+    unit = get_user_unit(message.from_user.id)
+    await state.set_data({'unit': unit})
     await message.answer(Text.INPUT_RECORD_WEIGHT)
 
 
-async def callback_record(callback_query: types.CallbackQuery):
+async def callback_record(
+    callback_query: types.CallbackQuery, state: FSMContext
+):
     await callback_query.message.delete()
-    await command_record(callback_query.message)
+    callback_query.message.from_user = callback_query.from_user
+    await command_record(callback_query.message, state)
 
 
 async def record_state_weight(message: types.Message, state: FSMContext):
-    if not message.text.isdigit():
+    try:
+        answer = message.text.replace(',', '.')
+        value = float(answer)
+    except ValueError:
         await message.answer(Text.NUMBER)
         return
-    answer = int(message.text)
-    await state.update_data({'mass': answer / 100})
+    unit = (await state.get_data())['unit']
+    if unit == 'oz':
+        value = ounce_to_gram(value)
+    await state.update_data({'mass': value / 100})
     await RecordState.next()
-
-    await message.answer(Text.INPUT_RECORD_PROTEIN)
+    per = PER_MASS_TEXTS[unit]
+    await message.answer(Text.INPUT_RECORD_PROTEIN.format(per=per))
 
 
 async def record_state_protein(message: types.Message, state: FSMContext):
-    if not message.text.isdigit():
+    try:
+        answer = message.text.replace(',', '.')
+        value = float(answer)
+    except ValueError:
         await message.answer(Text.NUMBER)
         return
-    answer = int(message.text)
-    mass = (await state.get_data())['mass']
-    await state.update_data({'protein': answer * mass})
+    data = await state.get_data()
+    mass = data['mass']
+    unit = data['unit']
+    await state.update_data({'protein': value * mass})
     await RecordState.next()
-
-    await message.answer(Text.INPUT_RECORD_FAT)
+    per = PER_MASS_TEXTS[unit]
+    await message.answer(Text.INPUT_RECORD_FAT.format(per=per))
 
 
 async def record_state_fat(message: types.Message, state: FSMContext):
-    if not message.text.isdigit():
+    try:
+        answer = message.text.replace(',', '.')
+        value = float(answer)
+    except ValueError:
         await message.answer(Text.NUMBER)
         return
-    answer = int(message.text)
-    mass = (await state.get_data())['mass']
-    await state.update_data({'fat': answer * mass})
+    data = await state.get_data()
+    mass = data['mass']
+    unit = data['unit']
+    await state.update_data({'fat': value * mass})
     await RecordState.next()
-
-    await message.answer(Text.INPUT_RECORD_CARB)
+    per = PER_MASS_TEXTS[unit]
+    await message.answer(Text.INPUT_RECORD_CARB.format(per=per))
 
 
 async def record_state_carb(message: types.Message, state: FSMContext):
-    if not message.text.isdigit():
+    try:
+        answer = message.text.replace(',', '.')
+        value = float(answer)
+    except ValueError:
         await message.answer(Text.NUMBER)
         return
-    answer = int(message.text)
     mass = (await state.get_data())['mass']
-    await state.update_data({'carb': answer * mass, 'time': datetime.utcnow()})
+    await state.update_data({'carb': value * mass, 'time': datetime.utcnow()})
 
     data = await state.get_data()
     data.pop('mass')
+    data.pop('unit')
     db_users.update_elem(
         {'user_id': message.from_user.id},
         {'records': create_record(**data)},
@@ -472,7 +544,9 @@ def register_user_handlers(dp: Dispatcher) -> None:
         command_calculate_calories, filters.Command('calculate'), state='*'
     )
     dp.register_message_handler(command_menu, filters.Command('menu'))
-    dp.register_message_handler(command_record, filters.Command('record'))
+    dp.register_message_handler(
+        command_record, filters.Command('record'), state='*'
+    )
     dp.register_message_handler(command_statistics, filters.Command('stat'))
     dp.register_message_handler(command_records, filters.Command('records'))
     dp.register_message_handler(
@@ -489,7 +563,9 @@ def register_user_handlers(dp: Dispatcher) -> None:
     dp.register_callback_query_handler(
         callback_open_menu, filters.Text(equals='to_menu')
     )
-    dp.register_callback_query_handler(callback_record, filters.Text('record'))
+    dp.register_callback_query_handler(
+        callback_record, filters.Text('record'), state='*'
+    )
     dp.register_callback_query_handler(
         callback_statistics, filters.Text(startswith='statistics')
     )
@@ -500,13 +576,7 @@ def register_user_handlers(dp: Dispatcher) -> None:
         callback_settings, filters.Text('settings')
     )
     dp.register_callback_query_handler(
-        callback_settings_unit, filters.Text('settings_unit')
-    )
-    dp.register_callback_query_handler(
-        callback_settings_timezone, filters.Text('settings_zone')
-    )
-    dp.register_callback_query_handler(
-        callback_settings_unit_edit, filters.Text(startswith='settings_unit_')
+        callback_setting, filters.Regexp(r'^settings_[a-z]+$')
     )
     dp.register_callback_query_handler(
         settings_timezone_page,
@@ -514,8 +584,7 @@ def register_user_handlers(dp: Dispatcher) -> None:
         state='*',
     )
     dp.register_callback_query_handler(
-        callback_settings_timezone_edit,
-        filters.Text(startswith='settings_zone_'),
+        callback_setting_edit, filters.Regexp(r'^settings_[a-z]+_[^_]+$')
     )
 
     # STATES
@@ -559,3 +628,9 @@ def register_user_handlers(dp: Dispatcher) -> None:
     )
     dp.register_message_handler(record_state_fat, state=RecordState.fat)
     dp.register_message_handler(record_state_carb, state=RecordState.carb)
+
+    # Limits edit state
+    dp.register_callback_query_handler(
+        callback_limit, filters.Regexp(r'limits_[a-z]+$'), state='*'
+    )
+    dp.register_message_handler(command_limit_edit, state=LimitState.edit)

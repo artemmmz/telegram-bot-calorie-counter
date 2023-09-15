@@ -38,6 +38,10 @@ class Word:
     ERROR = _('error')
     RECORDED = _('recorded')
 
+    PROTEIN = _('protein')
+    FAT = _('fat')
+    CARB = _('carb')
+
 
 class Text:
     HELLO = _('Hello!\n{t}')
@@ -55,7 +59,7 @@ class Text:
         ' - settings mass unit, timezone, language and etc.\n'
     )
     STATISTICS = _(
-        'Your statistics:\n\n'
+        '<b>STATISTICS</b>:\n\n'
         'Protein: {s[protein]}/{l[protein]} {u}\n'
         'Fat: {s[fat]}/{l[fat]} {u}\n'
         'Carb: {s[carb]}/{l[carb]} {u}\n'
@@ -70,9 +74,12 @@ class Text:
     )
     RECORDS = _('List of records\n\n{rt}')
     SETTINGS = _(
-        'SETTINGS\n\n'
-        'Mass unit: {s[unit]}\n'
-        'Timezone: UTC{s[timezone]}\n\n'
+        '<b>SETTINGS</b>\n\n'
+        'Mass unit: <code>{s[unit]}</code>\n'
+        'Timezone: <code>UTC{s[timezone]}</code>\n\n'
+        'Protein limit: <code>{l[protein]} {u}</code>\n'
+        'Fat limit: <code>{l[fat]} {u}</code>\n'
+        'Carb limit: <code>{l[carb]} {u}</code>\n\n'
         'What change?'
     )
     UNIT = _("Select your mass unit")
@@ -101,12 +108,17 @@ class Text:
     )
     LIMITS = _(
         'Your calorie limit: {result} kcal\n'
-        'Your protein limit: {result_limits[0]} g\n'
-        'Your fat limit: {result_limits[1]} g\n'
-        'Your carb limit: {result_limits[2]} g\n'
+        'Your protein limit: {result_limits[0]} {u}\n'
+        'Your fat limit: {result_limits[1]} {u}\n'
+        'Your carb limit: {result_limits[2]} {u}\n'
         'Write this number to your calorie limit?'
     )
     INPUT_RECORD_WEIGHT = _('Input the weight of eaten')
-    INPUT_RECORD_PROTEIN = _('Input the weight of protein per 100 grams')
-    INPUT_RECORD_FAT = _('Input the weight of fat per 100 grams')
-    INPUT_RECORD_CARB = _('Input the weight of carb per 100 grams')
+    INPUT_RECORD_PROTEIN = _('Input the weight of protein {per}')
+    INPUT_RECORD_FAT = _('Input the weight of fat {per}')
+    INPUT_RECORD_CARB = _('Input the weight of carb per {per}')
+    RECORD_PER_GRAMS = _('per 100 grams')
+    RECORD_PER_OUNCES = _('per 3.5 ounces')
+    INPUT_LIMIT_PROTEIN = _('Input a limit of protein per day')
+    INPUT_LIMIT_FAT = _('Input a limit of fat per day')
+    INPUT_LIMIT_CARB = _('Input a limit of carb per day')

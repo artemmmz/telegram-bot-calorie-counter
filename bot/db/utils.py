@@ -1,6 +1,6 @@
-from db import Database
-
 from datetime import datetime
+
+from db import Database
 
 db_users = Database('users')
 
@@ -8,6 +8,70 @@ db_users = Database('users')
 def get_user(user_id: int, __date_string: str | None = None):
     query = [
         {'$match': {'user_id': user_id}},
+        {
+            '$set': {
+                'limits.calories': {
+                    '$toInt': {
+                        '$sum': [
+                            {'$multiply': ['$limits.protein', 4]},
+                            {'$multiply': ['$limits.fat', 9]},
+                            {'$multiply': ['$limits.carb', 4]},
+                        ]
+                    }
+                },
+                'limits.protein': {
+                    '$cond': {
+                        'if': {'$eq': ['$settings.unit', 'oz']},
+                        'then': {
+                            '$round': [
+                                {
+                                    '$divide': [
+                                        '$limits.protein',
+                                        28.3495,
+                                    ]
+                                },
+                                1,
+                            ]
+                        },
+                        'else': {'$toInt': ['$limits.protein']},
+                    }
+                },
+                'limits.fat': {
+                    '$cond': {
+                        'if': {'$eq': ['$settings.unit', 'oz']},
+                        'then': {
+                            '$round': [
+                                {
+                                    '$divide': [
+                                        '$limits.fat',
+                                        28.3495,
+                                    ]
+                                },
+                                1,
+                            ]
+                        },
+                        'else': {'$toInt': ['$limits.fat']},
+                    }
+                },
+                'limits.carb': {
+                    '$cond': {
+                        'if': {'$eq': ['$settings.unit', 'oz']},
+                        'then': {
+                            '$round': [
+                                {
+                                    '$divide': [
+                                        '$limits.carb',
+                                        28.3495,
+                                    ]
+                                },
+                                1,
+                            ]
+                        },
+                        'else': {'$toInt': ['$limits.carb']},
+                    }
+                },
+            }
+        },
         {
             '$facet': {
                 'other': [],
@@ -225,5 +289,17 @@ def get_user(user_id: int, __date_string: str | None = None):
     answer = db_users.collection.aggregate(query)
     if answer.alive:
         return list(answer)[0]
+    else:
+        return None
+
+
+def get_user_unit(user_id: int):
+    query = [
+        {'$match': {'user_id': user_id}},
+        {'$project': {'unit': '$settings.unit'}},
+    ]
+    answer = db_users.collection.aggregate(query)
+    if answer.alive:
+        return list(answer)[0]['unit']
     else:
         return None

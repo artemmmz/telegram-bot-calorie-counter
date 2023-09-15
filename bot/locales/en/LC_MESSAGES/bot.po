@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bot VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-09-09 17:43+0300\n"
+"POT-Creation-Date: 2023-09-15 23:45+0300\n"
 "PO-Revision-Date: 2023-09-05 18:50+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
-
-#: handlers/user/main.py:68 handlers/user/main.py:96
-msgid "settingsunit"
-msgstr ""
 
 #: utils/texts.py:11
 msgid "yes"
@@ -106,13 +102,25 @@ msgstr ""
 msgid "recorded"
 msgstr ""
 
+#: utils/texts.py:41
+msgid "protein"
+msgstr ""
+
+#: utils/texts.py:42
+msgid "fat"
+msgstr ""
+
 #: utils/texts.py:43
+msgid "carb"
+msgstr ""
+
+#: utils/texts.py:47
 msgid ""
 "Hello!\n"
 "{t}"
 msgstr ""
 
-#: utils/texts.py:44
+#: utils/texts.py:48
 msgid ""
 "<b>MENU</b>\n"
 "\n"
@@ -125,9 +133,9 @@ msgid ""
 "\n"
 msgstr ""
 
-#: utils/texts.py:57
+#: utils/texts.py:61
 msgid ""
-"Your statistics:\n"
+"<b>STATISTICS</b>:\n"
 "\n"
 "Protein: {s[protein]}/{l[protein]} {u}\n"
 "Fat: {s[fat]}/{l[fat]} {u}\n"
@@ -135,7 +143,7 @@ msgid ""
 "Calories: {s[calories]}/{l[calories]} kcal\n"
 msgstr ""
 
-#: utils/texts.py:64
+#: utils/texts.py:68
 msgid ""
 "\tTime: {r[time_str]}\n"
 "\tProtein: {r[protein]} {unit}\n"
@@ -144,38 +152,42 @@ msgid ""
 "\tCalories: {r[calories]} kcal\n"
 msgstr ""
 
-#: utils/texts.py:71
+#: utils/texts.py:75
 msgid ""
 "List of records\n"
 "\n"
 "{rt}"
 msgstr ""
 
-#: utils/texts.py:72
+#: utils/texts.py:76
 msgid ""
-"SETTINGS\n"
+"<b>SETTINGS</b>\n"
 "\n"
-"Mass unit: {s[unit]}\n"
-"Timezone: UTC{s[timezone]}\n"
+"Mass unit: <code>{s[unit]}</code>\n"
+"Timezone: <code>UTC{s[timezone]}</code>\n"
+"\n"
+"Protein limit: <code>{l[protein]} {u}</code>\n"
+"Fat limit: <code>{l[fat]} {u}</code>\n"
+"Carb limit: <code>{l[carb]} {u}</code>\n"
 "\n"
 "What change?"
 msgstr ""
 
-#: utils/texts.py:78
+#: utils/texts.py:85
 msgid "Select your mass unit"
 msgstr ""
 
-#: utils/texts.py:79
+#: utils/texts.py:86
 msgid "Select your time zone"
 msgstr ""
 
-#: utils/texts.py:80
+#: utils/texts.py:87
 msgid ""
 "Your choices saved\n"
 "Calculate your limits?"
 msgstr ""
 
-#: utils/texts.py:81
+#: utils/texts.py:88
 msgid ""
 "Choose what do you want:\n"
 "\n"
@@ -184,27 +196,27 @@ msgid ""
 "3. For the weigth loss\n"
 msgstr ""
 
-#: utils/texts.py:87
+#: utils/texts.py:94
 msgid "Choose your gender"
 msgstr ""
 
-#: utils/texts.py:88
+#: utils/texts.py:95
 msgid "It must be a number"
 msgstr ""
 
-#: utils/texts.py:89
+#: utils/texts.py:96
 msgid "Input your age"
 msgstr ""
 
-#: utils/texts.py:90
+#: utils/texts.py:97
 msgid "Input your growth(rounded)"
 msgstr ""
 
-#: utils/texts.py:91
+#: utils/texts.py:98
 msgid "Input your weight(rounded)"
 msgstr ""
 
-#: utils/texts.py:92
+#: utils/texts.py:99
 msgid ""
 "Choose your activity coefficient:\n"
 "\n"
@@ -217,29 +229,49 @@ msgid ""
 "7. Physical activity every day + physical work\n"
 msgstr ""
 
-#: utils/texts.py:102
+#: utils/texts.py:109
 msgid ""
 "Your calorie limit: {result} kcal\n"
-"Your protein limit: {result_limits[0]} g\n"
-"Your fat limit: {result_limits[1]} g\n"
-"Your carb limit: {result_limits[2]} g\n"
+"Your protein limit: {result_limits[0]} {u}\n"
+"Your fat limit: {result_limits[1]} {u}\n"
+"Your carb limit: {result_limits[2]} {u}\n"
 "Write this number to your calorie limit?"
 msgstr ""
 
-#: utils/texts.py:109
+#: utils/texts.py:116
 msgid "Input the weight of eaten"
 msgstr ""
 
-#: utils/texts.py:110
-msgid "Input the weight of protein per 100 grams"
+#: utils/texts.py:117
+msgid "Input the weight of protein {per}"
 msgstr ""
 
-#: utils/texts.py:111
-msgid "Input the weight of fat per 100 grams"
+#: utils/texts.py:118
+msgid "Input the weight of fat {per}"
 msgstr ""
 
-#: utils/texts.py:112
-msgid "Input the weight of carb per 100 grams"
+#: utils/texts.py:119
+msgid "Input the weight of carb per {per}"
+msgstr ""
+
+#: utils/texts.py:120
+msgid "per 100 grams"
+msgstr ""
+
+#: utils/texts.py:121
+msgid "per 3.5 ounces"
+msgstr ""
+
+#: utils/texts.py:122
+msgid "Input a limit of protein per day"
+msgstr ""
+
+#: utils/texts.py:123
+msgid "Input a limit of fat per day"
+msgstr ""
+
+#: utils/texts.py:124
+msgid "Input a limit of carb per day"
 msgstr ""
 
 #~ msgid ""
@@ -290,5 +322,43 @@ msgstr ""
 #~ msgid ""
 #~ "Hello\n"
 #~ "{t}"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Your statistics:\n"
+#~ "\n"
+#~ "Protein: {s[protein]}/{l[protein]} {u}\n"
+#~ "Fat: {s[fat]}/{l[fat]} {u}\n"
+#~ "Carb: {s[carb]}/{l[carb]} {u}\n"
+#~ "Calories: {s[calories]}/{l[calories]} kcal\n"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "SETTINGS\n"
+#~ "\n"
+#~ "Mass unit: {s[unit]}\n"
+#~ "Timezone: UTC{s[timezone]}\n"
+#~ "\n"
+#~ "What change?"
+#~ msgstr ""
+
+#~ msgid "Input the weight of protein per 100 grams"
+#~ msgstr ""
+
+#~ msgid "Input the weight of fat per 100 grams"
+#~ msgstr ""
+
+#~ msgid "Input the weight of carb per 100 grams"
+#~ msgstr ""
+
+#~ msgid "settingsunit"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Your calorie limit: {result} kcal\n"
+#~ "Your protein limit: {result_limits[0]} g\n"
+#~ "Your fat limit: {result_limits[1]} g\n"
+#~ "Your carb limit: {result_limits[2]} g\n"
+#~ "Write this number to your calorie limit?"
 #~ msgstr ""
 
