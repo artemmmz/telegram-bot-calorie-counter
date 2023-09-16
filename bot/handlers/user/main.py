@@ -72,7 +72,7 @@ async def command_statistics(
         s=user['statistics'],
         l=user['limits'],
     )
-    reply_markup = get_statistics_keyboard(date_string, user['today_str'])
+    reply_markup = get_statistics_keyboard(date_string)
 
     if edit_message:
         await message.edit_text(text, reply_markup=reply_markup)
@@ -110,7 +110,6 @@ async def command_records(
     text = Text.RECORDS.format(rt=records_text)
     reply_markup = get_records_keyboard(
         date_string,
-        user['today_str'],
         page,
         ceil(len(records_date) / RECORDS_PAGE_NUM),
     )
@@ -207,7 +206,10 @@ async def callback_statistics(callback_query: types.CallbackQuery):
         await callback_query.message.delete()
         date_string = None
     callback_query.message.from_user = callback_query.from_user
-    await command_statistics(callback_query.message, date_string)
+    try:
+        await command_statistics(callback_query.message, date_string)
+    except exceptions.MessageNotModified:
+        await callback_query.answer(Word.ERROR.capitalize())
 
 
 async def callback_records(callback_query: types.CallbackQuery):
@@ -223,7 +225,7 @@ async def callback_records(callback_query: types.CallbackQuery):
     try:
         await command_records(callback_query.message, date_string, page)
     except exceptions.MessageNotModified:
-        await callback_query.answer(Word.ERROR.capitalize(), show_alert=True)
+        await callback_query.answer(Word.ERROR.capitalize())
 
 
 async def callback_settings(callback_query: types.CallbackQuery):

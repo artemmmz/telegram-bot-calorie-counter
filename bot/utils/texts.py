@@ -89,7 +89,7 @@ class Text:
         'Choose what do you want:\n\n'
         '1. Weight gain\n'
         '2. Control of the diet\n'
-        '3. For the weigth loss\n'
+        '3. For the weight loss\n'
     )
     CHOOSE_GENDER = _('Choose your gender')
     NUMBER = _('It must be a number')

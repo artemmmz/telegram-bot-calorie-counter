@@ -68,13 +68,13 @@ def get_timezone_keyboard(page=-1, rows=3, cols=3):
     return keyboard
 
 
-def get_statistics_keyboard(date: str, today_date: str):
+def get_statistics_keyboard(date: str):
     keyboard = InlineKeyboardMarkup(1)
     keyboard.row(
         InlineKeyboardButton(
             '<<', callback_data=f'statistics_{get_prev_day(date)}'
         ),
-        InlineKeyboardButton(date, callback_data=f'statistics_{today_date}'),
+        InlineKeyboardButton(date, callback_data='statistics_today'),
         InlineKeyboardButton(
             '>>', callback_data=f'statistics_{get_next_day(date)}'
         ),
@@ -87,7 +87,7 @@ def get_statistics_keyboard(date: str, today_date: str):
     return keyboard
 
 
-def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
+def get_records_keyboard(date: str, page: int, pages: int):
     keyboard = InlineKeyboardMarkup(1)
     if pages > 1:
         keyboard.row(
@@ -107,9 +107,7 @@ def get_records_keyboard(date: str, today_date: str, page: int, pages: int):
         InlineKeyboardButton(
             '<<', callback_data=f'records_{get_prev_day(date)}_p0'
         ),
-        InlineKeyboardButton(
-            f'{date}', callback_data=f'records_{today_date}_p0'
-        ),
+        InlineKeyboardButton(f'{date}', callback_data='records_today_p0'),
         InlineKeyboardButton(
             '>>', callback_data=f'records_{get_next_day(date)}_p0'
         ),
