@@ -56,7 +56,7 @@ class Text:
         '\t- Calculate(/calculate)'
         ' - calculate your calorie, protein, fat and carb limits\n'
         '\t- Settings(/settings)'
-        ' - settings mass unit, timezone, language and etc.\n'
+        ' - view and edit mass unit, timezone and limits of protein, fat, carb\n'
     )
     STATISTICS = _(
         '<b>STATISTICS</b>:\n\n'

@@ -152,14 +152,12 @@ def get_menu_inline_keyboard():
 
 def get_unit_inline_keyboard():
     keyboard = InlineKeyboardMarkup()
-    keyboard.add(
-        *[
+    for unit, word in MASS_UNITS.items():
+        keyboard.add(
             InlineKeyboardButton(
                 word[1].capitalize(), callback_data=f'settings_unit_{unit}'
             )
-            for unit, word in MASS_UNITS.items()
-        ]
-    )
+        )
     return keyboard
 
 

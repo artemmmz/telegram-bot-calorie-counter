@@ -136,11 +136,11 @@ async def command_settings(message: types.Message):
 
 
 async def command_setting(message: types.Message, setting: str | None = None):
-    ANSWERS = {
+    answers = {
         'timezone': (Text.TIMEZONE, get_timezone_keyboard()),
         'unit': (Text.UNIT, get_unit_inline_keyboard()),
     }
-    await message.answer(ANSWERS[setting][0], reply_markup=ANSWERS[setting][1])
+    await message.answer(answers[setting][0], reply_markup=answers[setting][1])
 
 
 async def command_setting_edit(
@@ -160,12 +160,12 @@ async def command_limit(
 ):
     await LimitState.edit.set()
     await state.update_data({'name': name})
-    ANSWERS = {
+    answers = {
         'protein': Text.INPUT_LIMIT_PROTEIN,
         'fat': Text.INPUT_LIMIT_FAT,
         'carb': Text.INPUT_LIMIT_CARB,
     }
-    await message.answer(ANSWERS[name])
+    await message.answer(answers[name])
 
 
 async def command_limit_edit(message: types.Message, state: FSMContext):
@@ -294,7 +294,7 @@ async def settings_state_unit(
     await state.update_data({'unit': answer})
     await SettingsState.next()
 
-    await command_setting(callback_query.message, 'unit')
+    await command_setting(callback_query.message, 'timezone')
 
 
 async def settings_timezone_page(callback_query: types.CallbackQuery):
@@ -306,7 +306,7 @@ async def settings_state_timezone(
     callback_query: types.CallbackQuery, state: FSMContext
 ):
     await callback_query.message.delete()
-    answer = callback_query.data[len('settings_zone_'):]  # fmt: skip
+    answer = callback_query.data[len('settings_timezone_'):]  # fmt: skip
     await state.update_data({'timezone': answer})
 
     data = await state.get_data()
@@ -407,19 +407,20 @@ async def calculate_state_activity(
 ):
     await callback_query.message.delete()
     activity = int(callback_query.data[len('activity_'):])  # fmt: skip
+
     data = await state.get_data()
     result = kcal_limit(
         data['weight'], data['growth'], data['age'], data['gender'], activity
     )
     result_limits = limits(result, data['for_what'])
-    await state.set_data({'result': result, 'limits': result_limits})
-    user_unit = get_user_unit(callback_query.from_user.id)
+    user_unit = data['unit']
     unit = MASS_UNITS[user_unit][0]
-
-    if unit == 'oz':
+    await state.set_data({'result': result, 'limits': result_limits})
+    if user_unit == 'oz':
         result_limits = [
             round(gram_to_ounce(value), 1) for value in result_limits
         ]
+
     await callback_query.message.answer(
         Text.LIMITS.format(result=result, result_limits=result_limits, u=unit),
         reply_markup=get_calculate_finish_inline_keyboard(),
@@ -593,7 +594,7 @@ def register_user_handlers(dp: Dispatcher) -> None:
     # Settings state
     dp.register_callback_query_handler(
         settings_state_timezone,
-        filters.Text(startswith='settings_zone_'),
+        filters.Text(startswith='settings_timezone_'),
         state=SettingsState.time_zone,
     )
     dp.register_callback_query_handler(
