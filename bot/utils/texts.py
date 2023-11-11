@@ -56,7 +56,7 @@ class Text:
         '\t- Calculate(/calculate)'
         ' - calculate your calorie, protein, fat and carb limits\n'
         '\t- Settings(/settings)'
-        ' - settings mass unit, timezone, language and etc.\n'
+        ' - view and edit mass unit, timezone and limits of protein, fat, carb\n'
     )
     STATISTICS = _(
         '<b>STATISTICS</b>:\n\n'
@@ -89,7 +89,7 @@ class Text:
         'Choose what do you want:\n\n'
         '1. Weight gain\n'
         '2. Control of the diet\n'
-        '3. For the weigth loss\n'
+        '3. For the weight loss\n'
     )
     CHOOSE_GENDER = _('Choose your gender')
     NUMBER = _('It must be a number')
